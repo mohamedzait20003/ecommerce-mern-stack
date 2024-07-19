@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 // Logo
-import Logo from '../assets/Logo/Logo.svg'
+import Logo from '../assets/Images/Logo/Logo.svg'
 
 // Icons
 import { GrSearch } from 'react-icons/gr'

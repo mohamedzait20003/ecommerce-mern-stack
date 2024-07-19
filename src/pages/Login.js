@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 // Images
-import LoginGIF from '../assets/Login GIF/Login.gif'
+import LoginGIF from '../assets/Images/Signin/Login.gif'
 
 const Login = () => {
     const [data, setData] = useState({
@@ -25,10 +25,10 @@ const Login = () => {
     };
 
     return (
-        <section id='login' className='mt-10'>
+        <section id='login' className='mt-10 mb-10'>
             <div className='container mx-auto p-4'>
                 <div className='w-full max-w-md flex flex-col items-center bg-white shadow-2xl px-8 py-5 mx-auto rounded-t-md'>
-                    <div className='flex items-center justify-center w-20 h-20 mx-auto'>
+                    <div className='flex flex-row items-center justify-between mx-auto'>
                         <img src={LoginGIF} alt="Login GIF" />
                     </div>
                     <form className='w-full grid gap-8 pt-6' onSubmit={handleSubmit}>
