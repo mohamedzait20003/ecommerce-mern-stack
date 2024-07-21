@@ -1,26 +1,57 @@
-const userModel = require('../models/userModel');
+const userModel = require("../models/userModel")
+const bcrypt = require('bcryptjs');
 
-const userSignupController = async (req, res) => {
+
+async function userSignUpController(req,res){
     try{
-        const { username, email, password } = req.body;
+        const { username, email, password} = req.body
 
-        if(!username){
-            throw new Error('Username is required');
+        const user = await userModel.findOne({email})
+        if(user){
+            throw new Error("User already exists")
         }
+
         if(!email){
-            throw new Error('Email is required');
+           throw new Error("Please provide email")
         }
         if(!password){
-            throw new Error('Password is required');
+            throw new Error("Please provide password")
+        }
+        if(!username){
+            throw new Error("Please provide name")
         }
 
-        const userData = new userModel(req.body);
+        const salt = bcrypt.genSaltSync(10);
+        const hashPassword = await bcrypt.hashSync(password, salt);
+
+        if(!hashPassword){
+            throw new Error("Something is wrong")
+        }
+
+        const payload = {
+            ...req.body,
+            role : "GENERAL",
+            password : hashPassword
+        }
+
+        const userData = new userModel(payload)
+        const saveUser = await userData.save()
+
+        res.status(201).json({
+            data : saveUser,
+            success : true,
+            error : false,
+            message : "User created Successfully!"
+        })
+
 
     }catch(err){
-        res.status(500).json({
-            message: err,
-            error: true,
-            success: false,
-        });
+        res.json({
+            message : err.message || err  ,
+            error : true,
+            success : false,
+        })
     }
-};
+}
+
+module.exports = userSignUpController

@@ -1,6 +1,8 @@
 // Libraries
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 // Helpers
 import imagetobase64 from '../helpers/imagetobase64'
@@ -8,49 +10,82 @@ import imagetobase64 from '../helpers/imagetobase64'
 // Images
 import SignupIcon from '../assets/Images/SignUp/SignUp.png'
 
+// API
+import SummaryApi from '../common/index'
+
 const Signup = () => {
-  const [data, setData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    profilePic: '',
-  });
-  const handleChange = (e) => {
-      const { name, value } = e.target
-      setData((preve) => {
-          return {
-              ...preve,
-              [name]: value
-          }
-      })
-  };
-  const handleUploadPic = async (e) => {
-    const file = e.target.files[0];
+    // Navigation
+    const navigate = useNavigate();
 
-    const imagePic = await imagetobase64(file);
-    setData((preve) => {
-      return {
-        ...preve,
-        profilePic: imagePic
-      }
+    // Data handling
+    const [data, setData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        profilePic: '',
     });
-  };
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setData((preve) => {
+            return {
+                ...preve,
+                [name]: value
+            }
+        })
+    };
 
+    // Image handling
+    const handleUploadPic = async (e) => {
+        const file = e.target.files[0];
 
-  const handleSubmit = (e) => {
-      e.preventDefault();
-  };
+        const imagePic = await imagetobase64(file);
+        setData((preve) => {
+        return {
+            ...preve,
+            profilePic: imagePic
+        }
+        });
+    };
 
-  return (
-    <section id='login' className='mt-10 mb-10'>
+    // Form handling
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (data.password === data.confirmPassword) {
+            try {
+                const response = await axios({
+                    url: SummaryApi.SignUp.url,
+                    method: SummaryApi.SignUp.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data)
+                });
+    
+                const dataApi = response.data;
+    
+                if (dataApi.success) {
+                    toast.success(dataApi.message);
+                    navigate('/login');
+                } 
+            } catch (err) {
+                toast.error("Error during sign up");
+            }
+        } else {
+            toast.error("Please check password and confirm password");
+        }
+    };
+
+    return (
+        <section id='login' className='mt-10 mb-10'>
             <div className='container mx-auto p-4'>
                 <div className='w-full max-w-md flex flex-col items-center bg-white shadow-2xl px-8 py-5 mx-auto rounded-t-md'>
                     <div className='flex items-center justify-center gap-8 w-50 h-20'>
                         <img className='w-20 h-20' src={data.profilePic || SignupIcon} alt="Login GIF" />
                         <input type='file' id='fileInput' className='hidden' onChange={handleUploadPic} />
                         <label htmlFor='fileInput' className='cursor-pointer p-2 shadow-2xl rounded-full'>
-                          Upload your photo
+                        Upload your photo
                         </label>
                     </div>
                     <form className='w-full grid gap-8 pt-6' onSubmit={handleSubmit}>
@@ -75,7 +110,7 @@ const Signup = () => {
                         <div className='w-full flex flex-col'>
                             <label className='text-lg'>Confirm Password:</label>
                             <div className='flex bg-slate-200 p-2 shadow-lg mt-2'>
-                                <input name='confirmpassword' type='password' placeholder='Confirm your password' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
+                                <input name='confirmPassword' type='password' placeholder='Confirm your password' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
                             </div> 
                         </div>
                         <button className='block bg-amber-500 place-self-end mx-auto mt-4 px-5 py-3 text-white text-2xl rounded-full hover:scale-105 transition-all'>
@@ -88,7 +123,7 @@ const Signup = () => {
                 </div>
             </div>
         </section>
-  )
+    )
 }
 
 export default Signup
