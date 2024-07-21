@@ -1,4 +1,5 @@
 // Libraries
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,7 +9,24 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+// API
+import SummaryApi from './common/index';
+
 function App() {
+  const fetchUserDetails = async () => {
+    const response = await fetch(SummaryApi.current_user.url, {
+      method: SummaryApi.current_user.method,
+      credentials: 'include',
+    });
+
+    const dataAPI = await response.json();
+    console.log("dataAPI", response);
+  }
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
   return (
     <>
       <ToastContainer />

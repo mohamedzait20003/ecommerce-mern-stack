@@ -1,24 +1,23 @@
-const userModel = require("../models/userModel")
+const userModel = require("../models/userModel");
 const bcrypt = require('bcryptjs');
-
 
 async function userSignUpController(req,res){
     try{
-        const { username, email, password} = req.body
+        const { username, email, password} = req.body;
 
-        const user = await userModel.findOne({email})
+        const user = await userModel.findOne({email});
         if(user){
-            throw new Error("User already exists")
+            throw new Error("User already exists");
         }
 
         if(!email){
-           throw new Error("Please provide email")
+           throw new Error("Please provide email");
         }
         if(!password){
-            throw new Error("Please provide password")
+            throw new Error("Please provide password");
         }
         if(!username){
-            throw new Error("Please provide name")
+            throw new Error("Please provide name");
         }
 
         const salt = bcrypt.genSaltSync(10);
@@ -32,17 +31,17 @@ async function userSignUpController(req,res){
             ...req.body,
             role : "GENERAL",
             password : hashPassword
-        }
+        };
 
-        const userData = new userModel(payload)
-        const saveUser = await userData.save()
+        const userData = new userModel(payload);
+        const saveUser = await userData.save();
 
         res.status(201).json({
             data : saveUser,
             success : true,
             error : false,
             message : "User created Successfully!"
-        })
+        });
 
 
     }catch(err){
@@ -50,8 +49,8 @@ async function userSignUpController(req,res){
             message : err.message || err  ,
             error : true,
             success : false,
-        })
+        });
     }
 }
 
-module.exports = userSignUpController
+module.exports = userSignUpController;

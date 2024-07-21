@@ -1,9 +1,14 @@
 // Libraries
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 // Images
-import LoginGIF from '../assets/Images/Signin/Login.gif'
+import LoginGIF from '../assets/Images/Signin/Login.gif';
+
+// API
+import SummaryApi from '../common/index';
 
 const Login = () => {
     const [data, setData] = useState({
@@ -20,8 +25,30 @@ const Login = () => {
         })
     };
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const response = await axios({
+            url: SummaryApi.Login.url,
+            method: SummaryApi.Login.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            withCredentials: true
+        });
+        
+        const DataAPI = response.data;
+        if(DataAPI.success){
+            toast.success(DataAPI.message);
+            navigate('/');
+        }
+        
+        if(DataAPI.error){
+            toast.error(DataAPI.message);
+        }
     };
 
     return (
