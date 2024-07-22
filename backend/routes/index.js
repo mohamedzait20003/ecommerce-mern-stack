@@ -12,6 +12,6 @@ const authToken = require('../middleware/authToken');
 // Routes
 router.post("/signup", userSignupController);
 router.post("/login", userLoginController);
-router.get("/user-details",authToken, userDetailsController);
+router.get("/user-details",authToken,userDetailsController)
 
 module.exports = router;

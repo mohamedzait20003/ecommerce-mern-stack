@@ -1,36 +1,52 @@
 const jwt = require('jsonwebtoken');
 
 async function authToken(req, res, next) {
-    try{
-        const token = req.cookies?.token || req.header;
+    try {
+        // Log cookies and headers for debugging
+        console.log("Cookies:", req.cookies);
+        console.log("Authorization Header:", req.headers['authorization']);
 
-        if(!token){
-            return res.json({
-                message: "Access Denied",
+        const token = req.cookies?.token;
+        console.log("Raw token:", token);
+
+        if (!token || token === 'undefined') {
+            return res.status(401).json({
+                message: "Access Denied. No token provided.",
+                data: [],
                 error: true,
                 success: false
-            })
+            });
         }
 
-        jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded){
-            console.log("err", err);
-            console.log("decoded", decoded);
+        // If token is from the Authorization header, it might be in the format "Bearer <token>"
+        if (token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length).trim();
+        }
 
-            if(err){
-                console.log("err Auth", err);
+        console.log("Formatted token:", token);
+
+        jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+            if (err) {
+                console.log("JWT Verification Error:", err);
+                return res.status(400).json({
+                    message: "Invalid token.",
+                    data: [],
+                    error: true,
+                    success: false
+                });
             }
 
-            req.user.id = decoded?._id;
+            console.log("Decoded:", decoded);
+            req.user = { id: decoded._id };
             next();
         });
 
-        console.log("token", token);
-    } catch (error) {
-        res.status(400).json({ 
-            message: error.message || error,
+    } catch (err) {
+        res.status(400).json({
+            message: err.message || err,
             data: [],
             error: true,
-            success: false 
+            success: false
         });
     }
 };

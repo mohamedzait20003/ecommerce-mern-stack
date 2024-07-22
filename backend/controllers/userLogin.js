@@ -21,10 +21,11 @@ async function userLoginController(req, res) {
         const checkPassword = await bcrypt.compare(password, user.password);
         
         if(checkPassword){
-            const tokendata = {
-                _id: user._id,
-                email: user.email,
+            const tokenData = {
+                _id : user._id,
+                email : user.email,
             }
+
             const token = await jwt.sign(tokendata, process.env.TOKEN_SECRET , { expiresIn: 60 * 60 * 8 });
 
             const tokenOption = {
@@ -32,7 +33,7 @@ async function userLoginController(req, res) {
                 secure: true,
             }
 
-            res.cookie("token", token.tokenOption).json({
+            res.cookie("token", token.tokenOption).status(200).json({
                 message: "Login success",
                 data: token,
                 error: false,
