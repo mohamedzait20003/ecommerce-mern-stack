@@ -2,9 +2,9 @@
 import React from 'react'
 
 // Components
-import LargeFooterContainer from '../containers/FooterConatiners/LargeFooterContainer';
-import MediumFooterContainer from '../containers/FooterConatiners/MediumFooterContainer';
-import SmallFooterContainer from '../containers/FooterConatiners/SmallFooterContainer';
+import LargeFooterContainer from '../containers/Footer/LargeFooterContainer';
+import MediumFooterContainer from '../containers/Footer/MediumFooterContainer';
+import SmallFooterContainer from '../containers/Footer/SmallFooterContainer';
 
 // Footer Links
 const FooterData = [

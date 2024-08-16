@@ -1,4 +1,7 @@
+// Model Import
 const userModel = require("../models/userModel");
+
+// Library Import
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -20,27 +23,26 @@ async function userLoginController(req, res) {
 
         const checkPassword = await bcrypt.compare(password, user.password);
         
-        if(checkPassword){
+        if (checkPassword) {
             const tokenData = {
-                _id : user._id,
-                email : user.email,
-            }
+                _id: user._id,
+                email: user.email,
+            };
 
-            const token = await jwt.sign(tokendata, process.env.TOKEN_SECRET , { expiresIn: 60 * 60 * 8 });
+            const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 * 8 });
 
             const tokenOption = {
                 httpOnly: true,
                 secure: true,
-            }
+            };
 
-            res.cookie("token", token.tokenOption).status(200).json({
+            res.cookie("token", token, tokenOption).status(200).json({
                 message: "Login success",
                 data: token,
                 error: false,
                 success: true,
             });
-        }
-        else{
+        } else {
             throw new Error("Password incorrect");
         }
 

@@ -1,11 +1,14 @@
 // Libraries
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Images
 import LoginGIF from '../assets/Images/Signin/Login.gif';
+
+// Context
+import Context from '../context/index';
 
 // API
 import SummaryApi from '../common/index';
@@ -26,6 +29,7 @@ const Login = () => {
     };
 
     const navigate = useNavigate();
+    const { fetchUserDetails } = useContext(Context);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,6 +48,7 @@ const Login = () => {
         if(DataAPI.success){
             toast.success(DataAPI.message);
             navigate('/');
+            fetchUserDetails();
         }
         
         if(DataAPI.error){

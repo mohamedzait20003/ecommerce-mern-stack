@@ -1,7 +1,11 @@
 // Libraries
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+
+// Styles
 import 'react-toastify/dist/ReactToastify.css';
 
 // Components
@@ -9,33 +13,47 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// API
+// Context
+import Context from './context/index';
+import { setUser } from './stores/slices/userSlice';
+
+// Summary Api
 import SummaryApi from './common/index';
 
 function App() {
-  const fetchUserDetails = async () => {
-    const response = await fetch(SummaryApi.current_user.url, {
-      method: SummaryApi.current_user.method,
-      credentials: 'include',
-    });
-
-    const dataAPI = await response.json();
-    console.log("dataAPI", response);
-  }
+  const dispatch = useDispatch();
+  
+  const fetchUserDetails = useCallback(async() => {
+    try {
+      const response = await axios({
+        url: SummaryApi.current_user.url,
+        method: SummaryApi.current_user.method,
+        withCredentials: true
+      });
+  
+      const response_data = response.data;
+      console.log("User Details:", response_data);
+      if(response_data.success){
+        dispatch(setUser(response_data.data));
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  },[dispatch]);
 
   useEffect(() => {
     fetchUserDetails();
-  }, []);
-
+  }, [fetchUserDetails]);
+  
   return (
-    <>
+    <Context.Provider value={{ fetchUserDetails }}>
       <ToastContainer />
       <Header />
-      <main className='lg:min-h-[calc(100vh-100px)] sm:min-h-[calc(90vh-100px)] min-h-[calc(71vh-100px)]'>
+      <main className='min-h-[calc(71vh-100px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-100px)]  '>
         <Outlet />
       </main>
       <Footer />
-    </>
+    </Context.Provider>
   );
 }
 

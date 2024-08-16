@@ -1,4 +1,7 @@
+// Model Import
 const userModel = require("../models/userModel");
+
+// Library Import
 const bcrypt = require('bcryptjs');
 
 async function userSignUpController(req,res){

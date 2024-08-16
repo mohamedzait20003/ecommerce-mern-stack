@@ -1,6 +1,7 @@
 // Libraries
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 // Logo
 import Logo from '../assets/Images/Logo/Logo.svg'
@@ -10,20 +11,24 @@ import { GrSearch } from 'react-icons/gr'
 import { FaRegUserCircle, FaShoppingCart } from 'react-icons/fa'
 
 const Header = () => {
-    const [LoggedIn, setLoggedIn] = useState(false);
+    const user = useSelector((state) => state?.user?.user);
+    const userExists = user !== null;
+
     const [searchplaceholder, setSearchplaceholder] = useState('search for Bread');
     const placeholders = useMemo(() => ['Bread', 'Milk', 'Butter', 'Fruits', 'a Story', 'a Book', 'a Dress', 'a Phone', 'a T.V', 'a Laptop'], []);
-
-    useEffect(() => {
+    
+    const updatePlaceholder = useCallback(() => {
         let index = 0;
-
-        const interplace = setInterval(() => {
+        return () => {
             setSearchplaceholder(`Search for ${placeholders[index]}`);
             index = (index + 1) % placeholders.length;
-        }, 2000);
+        };
+    }, [placeholders]);
 
+    useEffect(() => {
+        const interplace = setInterval(updatePlaceholder(), 2000);
         return () => clearInterval(interplace);
-    },[placeholders]);
+    },[updatePlaceholder]);
 
     return (
         <header className='h-16 bg-white shadow-md'>
@@ -47,7 +52,7 @@ const Header = () => {
                     </div>
                     <div className='flex items-center justify-center'>
                         {
-                            LoggedIn ? (
+                            userExists ? (
                                 <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-700'>
                                     <FaRegUserCircle  />
                                 </button>
