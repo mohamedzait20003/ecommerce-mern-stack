@@ -1,129 +1,128 @@
 // Libraries
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { toast } from 'react-toastify'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
+// Material-UI
+import { TextField, Button, Container, Box, Typography, Avatar, Grid, Link } from '@mui/material';
 
 // Helpers
-import imagetobase64 from '../helpers/imagetobase64'
+import imagetobase64 from '../helpers/imagetobase64';
 
-// Images
-import SignupIcon from '../assets/Images/SignUp/SignUp.png'
+// Icons
+import { FaUserPlus } from 'react-icons/fa';
 
 // API
-import SummaryApi from '../common/index'
+import SummaryApi from '../common/index';
 
 const Signup = () => {
-    // Navigation
-    const navigate = useNavigate();
+  // Navigation
+  const navigate = useNavigate();
 
-    // Data handling
-    const [data, setData] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        profilePic: '',
-    });
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setData((preve) => {
-            return {
-                ...preve,
-                [name]: value
-            }
-        })
-    };
+  // Data handling
+  const [data, setData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    profilePic: '',
+  });
 
-    // Image handling
-    const handleUploadPic = async (e) => {
-        const file = e.target.files[0];
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-        const imagePic = await imagetobase64(file);
-        setData((preve) => {
-        return {
-            ...preve,
-            profilePic: imagePic
-        }
+  // Image handling
+  const handleUploadPic = async (e) => {
+    const file = e.target.files[0];
+    const imagePic = await imagetobase64(file);
+    setData((prev) => ({
+      ...prev,
+      profilePic: imagePic,
+    }));
+  };
+
+  // Form handling
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (data.password === data.confirmPassword) {
+      try {
+        const response = await axios({
+          url: SummaryApi.SignUp.url,
+          method: SummaryApi.SignUp.method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          data: JSON.stringify(data),
         });
-    };
 
-    // Form handling
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+        const dataApi = response.data;
 
-        if (data.password === data.confirmPassword) {
-            try {
-                const response = await axios({
-                    url: SummaryApi.SignUp.url,
-                    method: SummaryApi.SignUp.method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    data: JSON.stringify(data)
-                });
-    
-                const dataApi = response.data;
-    
-                if (dataApi.success) {
-                    toast.success(dataApi.message);
-                    navigate('/login');
-                } 
-            } catch (err) {
-                toast.error("Error during sign up");
-            }
-        } else {
-            toast.error("Please check password and confirm password");
+        if (dataApi.success) {
+          toast.success(dataApi.message);
+          navigate('/login');
         }
-    };
+      } catch (err) {
+        toast.error('Error during sign up');
+      }
+    } else {
+      toast.error('Please check password and confirm password');
+    }
+  };
 
-    return (
-        <section id='login' className='mt-10 mb-10'>
-            <div className='container mx-auto p-4'>
-                <div className='w-full max-w-md flex flex-col items-center bg-white shadow-2xl px-8 py-5 mx-auto rounded-t-md'>
-                    <div className='flex items-center justify-center gap-8 w-50 h-20'>
-                        <img className='w-20 h-20' src={data.profilePic || SignupIcon} alt="Login GIF" />
-                        <input type='file' id='fileInput' className='hidden' onChange={handleUploadPic} />
-                        <label htmlFor='fileInput' className='cursor-pointer p-2 shadow-2xl rounded-full'>
-                        Upload your photo
-                        </label>
-                    </div>
-                    <form className='w-full grid gap-8 pt-6' onSubmit={handleSubmit}>
-                        <div className='w-full flex flex-col'>
-                            <label className='text-lg'>Username:</label>
-                            <div className='flex bg-slate-200 p-2 shadow-lg mt-2'>
-                                <input name='username' type='text' placeholder='Enter your Name' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
-                            </div> 
-                        </div>
-                        <div className='w-full flex flex-col'>
-                            <label className='text-lg'>Email:</label>
-                            <div className='flex bg-slate-200 p-2 shadow-lg mt-2'>
-                                <input name='email' type='email' placeholder='example@gmail.com' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
-                            </div> 
-                        </div>
-                        <div className='w-full flex flex-col'>
-                            <label className='text-lg'>Password:</label>
-                            <div className='flex bg-slate-200 p-2 shadow-lg mt-2'>
-                                <input name='password' type='password' placeholder='Enter your password' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
-                            </div> 
-                        </div>
-                        <div className='w-full flex flex-col'>
-                            <label className='text-lg'>Confirm Password:</label>
-                            <div className='flex bg-slate-200 p-2 shadow-lg mt-2'>
-                                <input name='confirmPassword' type='password' placeholder='Confirm your password' className='w-full h-full px-3 py-2 bg-transparent outline-none' onChange={handleChange} />
-                            </div> 
-                        </div>
-                        <button className='block bg-amber-500 place-self-end mx-auto mt-4 px-5 py-3 text-white text-2xl rounded-full hover:scale-105 transition-all'>
-                            Sign up
-                        </button>
-                    </form>
-                    <div className='place-self-start mt-6'>
-                        <p className='text-black'>Don&apos;t have an account ?<Link to={"/sign-up"} className='ml-2 hover:underline hover:text-red-800'>Sign up</Link></p>
-                    </div>
-                </div>
+  return (
+    <section id="signup" className="mt-10 mb-10">
+      <Container component="main" maxWidth="xs">
+        <Box className="flex flex-col items-center mt-10 mb-10 p-4 shadow-md rounded-lg bg-white">
+          <Box className="flex justify-center items-center gap-2 w-full h-20">
+            <label htmlFor="fileInput" className="cursor-pointer">
+              {data.profilePic ? (
+                <Avatar src={data.profilePic} alt="Profile" className="w-20 h-20" />
+              ) : (
+                <FaUserPlus className="w-20 h-20" />
+              )}
+            </label>
+            <input type="file" id="fileInput" className="hidden" onChange={handleUploadPic} />
+          </Box>
+          <form onSubmit={handleSubmit} className="w-full mt-8">
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField variant="outlined" fullWidth label="Username" name="username" placeholder="Enter your Name" onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField variant="outlined" fullWidth label="Email" name="email" type="email" placeholder="example@gmail.com" onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField variant="outlined" fullWidth label="Password" name="password" type="password" placeholder="Enter your password" onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField variant="outlined" fullWidth label="Confirm Password" name="confirmPassword" type="password" placeholder="Confirm your password" onChange={handleChange} />
+              </Grid>
+            </Grid>
+            <div className="mt-8">
+                <Button type="submit" fullWidth variant="contained" color="primary">
+                    Sign up
+                </Button>
             </div>
-        </section>
-    )
-}
+          </form>
+          <Box className="mt-8">
+            <Typography variant="body2">
+              Already have an account?{' '}
+              <Link href="/login" variant="body2">
+                Login
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Container>
+    </section>
+  );
+};
 
-export default Signup
+export default Signup;

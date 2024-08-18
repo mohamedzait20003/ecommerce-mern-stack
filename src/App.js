@@ -49,7 +49,7 @@ function App() {
     <Context.Provider value={{ fetchUserDetails }}>
       <ToastContainer />
       <Header />
-      <main className='min-h-[calc(71vh-100px)] sm:min-h-[calc(90vh-100px)] lg:min-h-[calc(100vh-100px)]  '>
+      <main className='min-h-[calc(100vh-110px)] flex flex-col'>
         <Outlet />
       </main>
       <Footer />

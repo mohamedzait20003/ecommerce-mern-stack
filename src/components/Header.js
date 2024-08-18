@@ -1,18 +1,47 @@
 // Libraries
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+
+// Context
+import { setUser } from '../stores/slices/userSlice'
+
+// Summary Api
+import SummaryApi from '../common/index';
 
 // Logo
 import Logo from '../assets/Images/Logo/Logo.svg'
 
 // Icons
 import { GrSearch } from 'react-icons/gr'
-import { FaRegUserCircle, FaShoppingCart } from 'react-icons/fa'
+import { FaRegUserCircle, FaShoppingCart, FaSignOutAlt } from 'react-icons/fa'
 
 const Header = () => {
-    const user = useSelector((state) => state?.user?.user);
-    const userExists = user !== null;
+    const dispatch = useDispatch();
+    const user = useSelector(state => state?.user?.user);
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try{
+            const response = await axios({
+                url: SummaryApi.Logout.url,
+                method: SummaryApi.Logout.method,
+                withCredentials: true
+            });
+        
+            if (response.data.success) {
+                dispatch(setUser(null));
+                navigate("/");
+                toast.success(response.data.message);
+            } else if (response.data.error) {
+                toast.error(response.data.error);
+            }
+        } catch (err){
+            console.log(err);
+        }
+    }
 
     const [searchplaceholder, setSearchplaceholder] = useState('search for Bread');
     const placeholders = useMemo(() => ['Bread', 'Milk', 'Butter', 'Fruits', 'a Story', 'a Book', 'a Dress', 'a Phone', 'a T.V', 'a Laptop'], []);
@@ -43,19 +72,24 @@ const Header = () => {
                         <GrSearch />
                     </button>
                 </div>
-                <div className='flex items-center gap-5 md:-mr-10'>
+                <div className='flex items-center gap-12 md:-mr-10'>
                     <div className='relative'>
                         <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-2xl text-blue-950'>
                             <FaShoppingCart  />
                         </button>
                         <p className=' w-5 h-5 -top-1 -right-0 absolute flex items-center justify-center bg-red-600 text-white rounded-full p-1'>0</p>
                     </div>
-                    <div className='flex items-center justify-center'>
+                    <div className='flex items-center justify-center -mr-5'>
                         {
-                            userExists ? (
-                                <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-700'>
-                                    <FaRegUserCircle  />
-                                </button>
+                            user ? (
+                                <div className='flex flex-row gap-5 items-center'>
+                                    <Link to={"user-profile"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-blue-950'>
+                                        <FaRegUserCircle  />
+                                    </Link>
+                                    <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-900' onClick={handleLogout}>
+                                        <FaSignOutAlt  />
+                                    </button>
+                                </div>
                             ) : (
                                 <Link to={"login"} className='h-10 min-w-max bg-amber-500 flex items-center justify-center p-4 rounded-full text-xl font-bold text-white hover:bg-emerald-600 '>
                                     Login
