@@ -32,7 +32,10 @@ async function userSignUpController(req,res){
 
         const payload = {
             ...req.body,
-            password : hashPassword
+            password : hashPassword,
+            Role: "User",
+            phone: [],
+            location: []
         };
 
         const userData = new userModel(payload);

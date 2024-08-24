@@ -1,13 +1,13 @@
-async function userLogout(req, res){
+async function userLogoutController(req, res){
     try{
         res.clearCookie('token');
         res.status(200).json({
-            message: "User Logged Out",
+            message: "Logged Out Successfully",
             data: [],
             error: false,
             success: true
         });
-    } catch (err){
+    } catch (err) {
         res.status(400).json({
             message: err.message || err,
             error: true,
@@ -16,4 +16,4 @@ async function userLogout(req, res){
     }
 }
 
-module.exports = userLogout;
+module.exports = userLogoutController;

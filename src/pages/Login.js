@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Material-UI
-import { TextField, Button, Container, Box, Typography, Grid } from '@mui/material';
+import { TextField, Button, Container, Box, Typography, Grid, FormControlLabel, Switch } from '@mui/material';
 
 // Images
 import LoginGIF from '../assets/Images/Signin/Login.gif';
@@ -17,10 +17,14 @@ import Context from '../context/index';
 import SummaryApi from '../common/index';
 
 const Login = () => {
+
+    // Form data
+    const [role, setRole] = useState('User');
     const [data, setData] = useState({
         email: '',
         password: ''
     });
+
     const handleChange = (e) => {
         const { name, value } = e.target
         setData((preve) => {
@@ -31,12 +35,15 @@ const Login = () => {
         })
     };
 
+    const handleRole = () => {
+        setRole((prevRole) => (prevRole === 'User' ? 'Admin' : 'User'));
+    };
+
     const navigate = useNavigate();
     const { fetchUserDetails } = useContext(Context);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const response = await axios({
             url: SummaryApi.Login.url,
             method: SummaryApi.Login.method,
@@ -69,10 +76,23 @@ const Login = () => {
                     <form className='w-full grid gap-8 pt-6' onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField variant='outlined' fullWidth name='email' label='Email' type='email' placeholder='example@gmail.com' className='bg-slate-200 shadow-lg mt-2' onChange={handleChange} />
+                                <TextField variant='outlined' fullWidth name='email' label='Email' type='email' placeholder='example@gmail.com' onChange={handleChange} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField variant='outlined' fullWidth name='password' label="Password" type='password' placeholder='Enter your password' className='bg-slate-200 shadow-lg mt-2' onChange={handleChange} />
+                                <TextField variant='outlined' fullWidth name='password' label="Password" type='password' placeholder='Enter your password' onChange={handleChange} />
+                            </Grid>
+                            <Grid item xs={12} className='flex justify-center'>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={role === 'Admin'}
+                                            onChange={handleRole}
+                                            name="role"
+                                            color="primary"
+                                        />
+                                    }
+                                    label={role === 'Admin' ? 'Admin' : 'User'}
+                                />
                             </Grid>
                         </Grid>
                         <Box className='w-full flex flex-col'>
@@ -86,7 +106,10 @@ const Login = () => {
                     </form>
                     <Box className='place-self-start mt-6'>
                         <Typography variant="body1" className='text-black'>
-                            Don&apos;t have an account? <Link to={"/sign-up"} className='ml-2 hover:underline hover:text-red-800'>Sign up</Link>
+                            Don&apos;t have an account? 
+                            <Link to={"/sign-up"} className='ml-2 hover:underline hover:text-blue-800'>
+                                Sign up
+                            </Link>
                         </Typography>
                     </Box>
                 </Box>

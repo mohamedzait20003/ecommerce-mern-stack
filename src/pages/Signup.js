@@ -1,17 +1,18 @@
 // Libraries
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 // Material-UI
-import { TextField, Button, Container, Box, Typography, Avatar, Grid, Link } from '@mui/material';
+import { TextField, Button, Container, Box, Typography, Avatar, Grid } from '@mui/material';
 
 // Helpers
 import imagetobase64 from '../helpers/imagetobase64';
 
 // Icons
-import { FaUserPlus } from 'react-icons/fa';
+import { FaUserPlus, FaTimes } from 'react-icons/fa';
+import { BsCheck2All } from 'react-icons/bs';
 
 // API
 import SummaryApi from '../common/index';
@@ -20,7 +21,8 @@ const Signup = () => {
   // Navigation
   const navigate = useNavigate();
 
-  // Data handling
+  // Form data
+  const [InputStart, setInputStart] = useState(false);
   const [data, setData] = useState({
     username: '',
     email: '',
@@ -29,13 +31,46 @@ const Signup = () => {
     profilePic: '',
   });
 
+  // Password criteria
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    uCase: false,
+    num: false,
+    sChar: false,
+    passLength: false,
+    identicality: false
+  });
+
+  // Form handling
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    if (!InputStart) {
+        setInputStart(true);
+    }
+
+    if (name === 'password' || name === 'confirmPassword') {
+        validatePassword(name, value);
+    }
   };
+
+  // Password validation
+  const validatePassword = (name, value) => {
+    const { password, confirmPassword } = data;
+    const pass = name === 'password' ? value : password;
+    const confirmPass = name === 'confirmPassword' ? value : confirmPassword;
+
+    setPasswordCriteria({
+      uCase: /[A-Z]/.test(pass),
+      num: /\d/.test(pass),
+      sChar: /[!@#$%^&*(),.?":{}|<>]/.test(pass),
+      passLength: pass.length >= 8,
+      identicality: pass === confirmPass
+    });
+  }
 
   // Image handling
   const handleUploadPic = async (e) => {
@@ -47,11 +82,11 @@ const Signup = () => {
     }));
   };
 
-  // Form handling
+  // Form Submit handling
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (data.password === data.confirmPassword) {
+    if (passwordCriteria.uCase && passwordCriteria.num && passwordCriteria.sChar && passwordCriteria.passLength && passwordCriteria.identicality) {
       try {
         const response = await axios({
           url: SummaryApi.SignUp.url,
@@ -72,7 +107,20 @@ const Signup = () => {
         toast.error('Error during sign up');
       }
     } else {
-      toast.error('Please check password and confirm password');
+        if (!passwordCriteria.uCase) {
+            toast.error('Password must contain an uppercase letter');
+        } else if (!passwordCriteria.num) {
+            toast.error('Password must contain a number');
+        }
+        else if (!passwordCriteria.sChar) {
+            toast.error('Password must contain a special character');
+        }
+        else if (!passwordCriteria.passLength) {
+            toast.error('Password must be at least 8 characters long');
+        }
+        else if (!passwordCriteria.identicality) {
+            toast.error('Passwords must match');
+        }
     }
   };
 
@@ -105,16 +153,50 @@ const Signup = () => {
                 <TextField variant="outlined" fullWidth label="Confirm Password" name="confirmPassword" type="password" placeholder="Confirm your password" onChange={handleChange} />
               </Grid>
             </Grid>
+            {InputStart && (
+                <Box mt={4} mb={4} p={2} border={1} borderColor="grey.300" borderRadius={4}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" className={`flex flex-row items-center gap-3 ${passwordCriteria.uCase ? 'text-green-700' : 'text-red-900'}`}>
+                                {passwordCriteria.uCase ? <BsCheck2All /> : <FaTimes />} Must contain an uppercase letter
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" className={`flex flex-row items-center gap-3 ${passwordCriteria.num ? 'text-green-700' : 'text-red-900'}`}>
+                                {passwordCriteria.num ? <BsCheck2All /> : <FaTimes />} Must contain a number
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" className={`flex flex-row items-center gap-3 ${passwordCriteria.sChar ? 'text-green-700' : 'text-red-900'}`}>
+                                {passwordCriteria.sChar ? <BsCheck2All /> : <FaTimes />} Must contain a special character
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" className={`flex flex-row items-center gap-3 ${passwordCriteria.passLength ? 'text-green-700' : 'text-red-900'}`}>
+                                {passwordCriteria.passLength ? <BsCheck2All /> : <FaTimes />} Must be at least 8 characters long
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" className={`flex flex-row items-center gap-3 ${passwordCriteria.identicality ? 'text-green-700' : 'text-red-900'}`}>
+                                {passwordCriteria.identicality ? <BsCheck2All /> : <FaTimes />} Passwords must match
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Box>
+            )}
             <div className="mt-8">
                 <Button type="submit" fullWidth variant="contained" color="primary">
                     Sign up
                 </Button>
             </div>
           </form>
-          <Box className="mt-8">
-            <Typography variant="body2">
+          <Box className=''>
+
+          </Box>
+          <Box className='place-self-start mt-6'>
+            <Typography variant="body2"  className='text-black'>
               Already have an account?{' '}
-              <Link href="/login" variant="body2">
+              <Link to={`/login`} className='ml-2 hover:underline hover:text-blue-800'>
                 Login
               </Link>
             </Typography>

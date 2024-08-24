@@ -20,9 +20,10 @@ import { FaRegUserCircle, FaShoppingCart, FaSignOutAlt } from 'react-icons/fa'
 
 const Header = () => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state?.user?.user);
     const navigate = useNavigate();
 
+    const user = useSelector(state => state?.user?.user);
+    
     const handleLogout = async () => {
         try{
             const response = await axios({
@@ -73,12 +74,14 @@ const Header = () => {
                     </button>
                 </div>
                 <div className='flex items-center gap-12 md:-mr-10'>
-                    <div className='relative'>
-                        <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-2xl text-blue-950'>
-                            <FaShoppingCart  />
-                        </button>
-                        <p className=' w-5 h-5 -top-1 -right-0 absolute flex items-center justify-center bg-red-600 text-white rounded-full p-1'>0</p>
-                    </div>
+                    { (user && user.Role === 'User') && (
+                        <div className='relative'>
+                            <Link to={"cart"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-2xl text-blue-950'>
+                                <FaShoppingCart  />
+                            </Link>
+                            <p className=' w-5 h-5 -top-1 -right-0 absolute flex items-center justify-center bg-red-600 text-white rounded-full p-1'>0</p>
+                        </div>
+                    )}
                     <div className='flex items-center justify-center -mr-5'>
                         {
                             user ? (

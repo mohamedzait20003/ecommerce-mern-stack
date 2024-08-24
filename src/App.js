@@ -33,6 +33,7 @@ function App() {
   
       const response_data = response.data;
       console.log("User Details:", response_data);
+      
       if(response_data.success){
         dispatch(setUser(response_data.data));
       }
