@@ -8,7 +8,7 @@ import axios from 'axios'
 // Context
 import { setUser } from '../stores/slices/userSlice'
 
-// Summary Api
+// Common
 import SummaryApi from '../common/index';
 
 // Logo

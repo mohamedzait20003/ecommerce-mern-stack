@@ -1,5 +1,5 @@
 // Model Import
-const userModel = require("../models/userModel");
+const userModel = require("../../models/userModel");
 
 // Library Import
 const bcrypt = require('bcryptjs');

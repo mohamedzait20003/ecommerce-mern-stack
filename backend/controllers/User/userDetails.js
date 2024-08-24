@@ -1,5 +1,5 @@
 // Model Import
-const userModel = require("../models/userModel");
+const userModel = require("../../models/userModel");
 
 // Controller
 async function userDetailsController(req, res) {

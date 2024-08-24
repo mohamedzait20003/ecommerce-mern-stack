@@ -5,12 +5,12 @@ const router = express.Router();
 const authToken = require('../middleware/authToken');
 
 // Import User Controllers
-const userSignupController = require('../controllers/userSignup');
-const userLoginController = require('../controllers/userLogin');
-const userDetailsController = require('../controllers/userDetails');
+const userSignupController = require('../controllers/User/userSignup');
+const userLoginController = require('../controllers/User/userLogin');
+const userDetailsController = require('../controllers/User/userDetails');
 
 // Import Logout Controller
-const userLogoutController = require('../controllers/userLogout');
+const userLogoutController = require('../controllers/User/userLogout');
 
 // Logout Route
 router.get("/logout", userLogoutController);
