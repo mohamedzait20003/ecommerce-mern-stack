@@ -1,5 +1,6 @@
 // Libraries
 import React, { useState, useEffect } from 'react';
+import { Avatar } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 // Icons
@@ -8,9 +9,12 @@ import { FaLocationDot } from "react-icons/fa6";
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { ImProfile } from "react-icons/im";
 
+// Containers
+import Profile from '../components/Profile';
+
 const UserProfile = () => {
   // State
-  const [state, setState] = useState(0);
+  const [state, setState] = useState(1);
 
   // User Data
   const userState = useSelector(state => state?.user?.user);
@@ -26,8 +30,8 @@ const UserProfile = () => {
         <section className='w-full h-80 flex flex-col items-center justify-center'>
           <div className='w-50 flex flex-col items-center justify-center gap-8'>
               {user?.profilePic ? (
-                  <img className='w-20 h-20' src={user?.profilePic} alt="Profile" />
-              ) : (
+                  <Avatar src={user?.profilePic} alt="Profile" sx={{ width: 80, height: 80 }} />
+                ) : (
                   <FaUser className='w-20 h-20' />
               )}
               <p className='capitalize text-lg font-semibold mt-4'>{user?.username}</p>
@@ -42,15 +46,21 @@ const UserProfile = () => {
           </div>
         </section>
       </aside>
-      <main className='flex-grow h-full py-8 px-4'>
+      <main className='w-full h-full py-8 px-4'>
         {state === 1 ? (
-          <div>Profile Content</div>
+          <Profile user={user} />
         ) : state === 2 ? (
-          <div>Addresses Content</div>
+          <section>
+
+          </section>
         ) : state === 3 ? (
-          <div>Orders Content</div>
+          <section>
+
+          </section>
         ) : state === 4 ? (
-          <div>Cards Content</div>
+          <section>
+
+          </section>
         ) : null}
       </main>
     </section>

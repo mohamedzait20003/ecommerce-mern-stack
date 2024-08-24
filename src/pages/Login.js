@@ -5,21 +5,19 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Material-UI
-import { TextField, Button, Container, Box, Typography, Grid, FormControlLabel, Switch } from '@mui/material';
-
-// Images
-import LoginGIF from '../assets/Images/Signin/Login.gif';
+import { TextField, Button, Container, Box, Typography, Grid, } from '@mui/material';
 
 // Context
 import Context from '../context/index';
 
-// API
+// Common
 import SummaryApi from '../common/index';
 
-const Login = () => {
+// Images
+import LoginGIF from '../assets/Images/Signin/Login.gif';
 
+const Login = () => {
     // Form data
-    const [role, setRole] = useState('User');
     const [data, setData] = useState({
         email: '',
         password: ''
@@ -33,10 +31,6 @@ const Login = () => {
                 [name]: value
             }
         })
-    };
-
-    const handleRole = () => {
-        setRole((prevRole) => (prevRole === 'User' ? 'Admin' : 'User'));
     };
 
     const navigate = useNavigate();
@@ -73,26 +67,13 @@ const Login = () => {
                     <Box className='flex flex-row items-center justify-between mx-auto'>
                         <img src={LoginGIF} alt="Login GIF" />
                     </Box>
-                    <form className='w-full grid gap-8 pt-6' onSubmit={handleSubmit}>
+                    <form className='w-full grid gap-8 pt-6 mt-6' onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField variant='outlined' fullWidth name='email' label='Email' type='email' placeholder='example@gmail.com' onChange={handleChange} />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField variant='outlined' fullWidth name='password' label="Password" type='password' placeholder='Enter your password' onChange={handleChange} />
-                            </Grid>
-                            <Grid item xs={12} className='flex justify-center'>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={role === 'Admin'}
-                                            onChange={handleRole}
-                                            name="role"
-                                            color="primary"
-                                        />
-                                    }
-                                    label={role === 'Admin' ? 'Admin' : 'User'}
-                                />
                             </Grid>
                         </Grid>
                         <Box className='w-full flex flex-col'>

@@ -86,9 +86,11 @@ const Header = () => {
                         {
                             user ? (
                                 <div className='flex flex-row gap-5 items-center'>
-                                    <Link to={"user-profile"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-blue-950'>
-                                        <FaRegUserCircle  />
-                                    </Link>
+                                    {user?.Role !== 'Admin' && (
+                                        <Link to={"user-profile"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-blue-950'>
+                                            <FaRegUserCircle  />
+                                        </Link>
+                                    )}
                                     <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-900' onClick={handleLogout}>
                                         <FaSignOutAlt  />
                                     </button>

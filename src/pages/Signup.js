@@ -1,8 +1,8 @@
 // Libraries
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 // Material-UI
 import { TextField, Button, Container, Box, Typography, Avatar, Grid } from '@mui/material';
@@ -51,26 +51,27 @@ const Signup = () => {
     if (!InputStart) {
         setInputStart(true);
     }
-
-    if (name === 'password' || name === 'confirmPassword') {
-        validatePassword(name, value);
-    }
   };
 
   // Password validation
-  const validatePassword = (name, value) => {
+  const validatePassword = useCallback(() => {
     const { password, confirmPassword } = data;
-    const pass = name === 'password' ? value : password;
-    const confirmPass = name === 'confirmPassword' ? value : confirmPassword;
 
     setPasswordCriteria({
-      uCase: /[A-Z]/.test(pass),
-      num: /\d/.test(pass),
-      sChar: /[!@#$%^&*(),.?":{}|<>]/.test(pass),
-      passLength: pass.length >= 8,
-      identicality: pass === confirmPass
+      uCase: /[A-Z]/.test(password),
+      num: /\d/.test(password),
+      sChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      passLength: password.length >= 8,
+      identicality: password === confirmPassword
     });
-  }
+  },[data]);
+
+  useEffect(() => {
+    if (InputStart) {
+        validatePassword();
+    }
+  }, [data.password, data.confirmPassword, validatePassword, InputStart]);
+  
 
   // Image handling
   const handleUploadPic = async (e) => {

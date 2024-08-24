@@ -16,6 +16,14 @@ const SummaryApi = {
     Logout: {
         url: `${backendDomain}/api/logout`,
         method: 'get'
+    },
+    ChangeUsername: {
+        url: `${backendDomain}/api/user-name-change`,
+        method: 'post'
+    },
+    ChangePassword: {
+        url: `${backendDomain}/api/user-password-change`,
+        method: 'post'
     }
 };
 
