@@ -16,7 +16,7 @@ const userPassChangeController = require('../controllers/User/userPassChange');
 // Import Logout Controller
 const userLogoutController = require('../controllers/User/userLogout');
 
-// Logout Route
+// Common Routes
 router.get("/logout", userLogoutController);
 
 // User Routes

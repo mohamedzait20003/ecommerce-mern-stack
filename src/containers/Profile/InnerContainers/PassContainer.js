@@ -6,10 +6,10 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 // Context
-import Context from '../../context/index';
+import Context from '../../../context/index';
 
 // Common
-import SummaryApi from '../../common/index';
+import SummaryApi from '../../../common/index';
 
 // Icons
 import { FaTimes } from 'react-icons/fa';
