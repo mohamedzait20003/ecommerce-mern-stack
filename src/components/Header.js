@@ -61,13 +61,13 @@ const Header = () => {
     },[updatePlaceholder]);
 
     return (
-        <header className='h-16 bg-white shadow-md'>
+        <header className='h-16 sticky bg-white md:shadow-md z-50'>
             <div className='h-full container mx-auto flex items-center justify-between px-4'>
                 <Link to={"/"} className='flex flex-row items-center justify-start space-x-2'>
                     <img className='w-16 h-10' src={Logo} alt="ZCommerce Logo" />
                     <h1 className='text-4xl text-amber-900 font-extrabold'>ZC</h1>
                 </Link>
-                <div className='hidden w-full md:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow'>
+                <div className='hidden w-full lg:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow'>
                     <input className='w-full outline-none pl-3 pr-2 py-2 rounded-l-full' type='text' placeholder={searchplaceholder} />
                     <button className='h-10 min-w-[50px] bg-amber-500 flex items-center justify-center rounded-r-full text-white text-2xl font-extrabold'>
                         <GrSearch />
@@ -82,7 +82,7 @@ const Header = () => {
                             <p className=' w-5 h-5 -top-1 -right-0 absolute flex items-center justify-center bg-red-600 text-white rounded-full p-1'>0</p>
                         </div>
                     )}
-                    <div className='flex items-center justify-center -mr-5'>
+                    <div className='flex items-center justify-center'>
                         {
                             user ? (
                                 <div className='flex flex-row gap-5 items-center'>
