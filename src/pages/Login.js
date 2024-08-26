@@ -14,7 +14,7 @@ import Context from '../context/index';
 import SummaryApi from '../common/index';
 
 // Images
-import LoginGIF from '../assets/Images/Signin/Login.gif';
+import LoginGIF from '../assets/Signin/Login.gif';
 
 const Login = () => {
     // Form data

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import FooterFeatureContainer from './FooterFeatureContainer'
 
 // Images
-import Logo from '../../assets/Images/Logo/Logo.svg'
+import Logo from '../../assets/Logo/Logo.svg'
 
 // Icons
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa'

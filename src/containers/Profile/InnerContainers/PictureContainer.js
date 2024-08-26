@@ -1,7 +1,18 @@
 // Librairies
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useSelector } from 'react-redux';
 import { Box, Button, Avatar } from '@mui/material'
+import { toast } from 'react-toastify';
+import axios from 'axios';
+
+// Helpers
+import imagetobase64 from '../../../helpers/imagetobase64';
+
+// Context
+import Context from '../../../context/index';
+
+// Common
+import SummaryApi from '../../../common/index';
 
 // Icons
 import { FaUser } from 'react-icons/fa';
@@ -9,11 +20,42 @@ import { FaUser } from 'react-icons/fa';
 const PictureContainer = () => {
     // User Data
     const userState = useSelector(state => state?.user?.user);
-    const [user, setUser] = useState(userState);
+    const [profilePic, setProfilePic] = useState('');
 
     useEffect(() => {
-        setUser(userState);
+        setProfilePic(userState?.profilePic || '');
     }, [userState]);
+
+    const handleUploadPic = async (e) => {
+        const file = e.target.files[0];
+        const imagePic = await imagetobase64(file);
+        setProfilePic(imagePic);
+    };
+
+    // Context Handler
+    const { fetchUserDetails } = useContext(Context);
+
+    const handleUpdatePic = async (e) => {
+        e.preventDefault();
+        const response = await axios({
+            url: SummaryApi.ChangeProfilePic.url,
+            method: SummaryApi.ChangeProfilePic.method,
+            data: JSON.stringify({
+                Id: userState?._id,                
+                profilePic: profilePic
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.data.success) {
+            toast.success(response.data.message);
+            fetchUserDetails();
+        } else {
+            toast.error(response.data.message);
+        }
+    };
 
     return (
         <Box className='flex flex-col px-2 py-3 gap-6'>
@@ -23,20 +65,25 @@ const PictureContainer = () => {
             </Box>
             <Box className="w-full flex justify-between mt-4">
                 <Box>
-                    {user?.profilePic ? (
-                        <Avatar src={user?.profilePic} alt="Profile" sx={{ width: 80, height: 80 }} />
-                        ) : (
+                    {profilePic ? (
+                        <Avatar src={profilePic} alt="Profile" sx={{ width: 80, height: 80 }} />
+                    ) : (
                         <FaUser className='w-20 h-20' />
                     )}
                 </Box>
                 <Box className="flex flex-col gap-4">
-                    <Button variant="contained" component="label">
-                        Upload File
-                        <input type="file" hidden />
+                    <Button variant="contained" color="secondary">
+                        Remove
                     </Button>
-                    <Button variant="contained" color="primary">
-                        Save Changes
-                    </Button>
+                    <Box className="flex flex-row gap-6">
+                        <Button variant="contained" component="label">
+                            Upload File
+                            <input type="file" hidden onChange={handleUploadPic} />
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handleUpdatePic}>
+                            Save Changes
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
         </Box>

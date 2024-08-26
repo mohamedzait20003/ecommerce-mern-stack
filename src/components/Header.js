@@ -12,7 +12,7 @@ import { setUser } from '../stores/slices/userSlice'
 import SummaryApi from '../common/index';
 
 // Logo
-import Logo from '../assets/Images/Logo/Logo.svg'
+import Logo from '../assets/Logo/Logo.svg'
 
 // Icons
 import { GrSearch } from 'react-icons/gr'
