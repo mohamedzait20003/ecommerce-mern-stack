@@ -2,17 +2,13 @@
 const userModel = require("../../models/userModel");
 
 // Controller
-async function userPicChangeController(req, res) {
+async function userPicRemoveController(req, res) {
     try {
-        const { Id, profilePic } = req.body;
-
-        if (!profilePic) {
-            throw new Error("Pic is required");
-        }
+        const { Id } = req.body;
 
         const updateUser = await userModel.findByIdAndUpdate(
             Id,
-            { profilePic: profilePic },
+            { profilePic: "" },
             { new: true }
         );
 
@@ -21,7 +17,7 @@ async function userPicChangeController(req, res) {
         }
 
         res.status(200).json({
-            message: "Picture changed Successfully!",
+            message: "Picture Deleted Successfully!",
             success: true,
             error: false,
         });
@@ -35,4 +31,4 @@ async function userPicChangeController(req, res) {
     }
 }
 
-module.exports = userPicChangeController;
+module.exports = userPicRemoveController;

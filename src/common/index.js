@@ -21,6 +21,10 @@ const SummaryApi = {
         url: `${backendDomain}/api/user-pic-change`,
         method: 'post'
     },
+    RemoveProfilePic: {
+        url: `${backendDomain}/api/user-pic-remove`,
+        method: 'post'
+    },
     ChangeUsername: {
         url: `${backendDomain}/api/user-name-change`,
         method: 'post'

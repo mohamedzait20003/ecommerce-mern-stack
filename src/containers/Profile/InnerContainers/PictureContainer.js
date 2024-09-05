@@ -57,6 +57,27 @@ const PictureContainer = () => {
         }
     };
 
+    const handleRemovePic = async (e) => {
+        e.preventDefault();
+        const response = await axios({
+            url: SummaryApi.RemoveProfilePic.url,
+            method: SummaryApi.RemoveProfilePic.method,
+            data: JSON.stringify({
+                Id: userState?._id,
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (response.data.success) {
+            toast.success(response.data.message);
+            fetchUserDetails();
+        } else {
+            toast.error(response.data.message);
+        }
+    }
+
     return (
         <Box className='flex flex-col px-2 py-3 gap-6'>
             <Box className='w-fit flex flex-col gap-1'>
@@ -72,7 +93,7 @@ const PictureContainer = () => {
                     )}
                 </Box>
                 <Box className="flex flex-col gap-4">
-                    <Button variant="contained" color="secondary">
+                    <Button variant="contained" color="secondary" onClick={handleRemovePic}>
                         Remove
                     </Button>
                     <Box className="flex flex-row gap-6">

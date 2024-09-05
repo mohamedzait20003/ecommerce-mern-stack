@@ -1,20 +1,34 @@
 // Libraries
 import React, {useState, useEffect} from 'react'
-import { Box, Button } from '@mui/material'
+import { Box } from '@mui/material'
 import { useSelector } from 'react-redux';
 
 // Components
 import PhoneContainer from './PhoneContainer';
-
-import { IoAddCircle } from "react-icons/io5";
+import AddPhoneContainer from './AddPhoneContainer';
 
 const PhonesContainer = () => {
-     // User Data
-     const userState = useSelector(state => state?.user?.user);
-     const [user, setUser] = useState(userState);
-     useEffect(() => {
-         setUser(userState);
-     }, [userState]);
+    // User Data
+    const userState = useSelector(state => state?.user?.user);
+    const [phones, setPhones] = useState([]);
+
+    useEffect(() => {
+        setPhones(userState?.phoneNumbers || []);
+    }, [userState]);
+
+    const renderPhoneNumbers = () => {
+        if (phones.length > 0) {
+            return phones.map((phone, index) => (
+                <PhoneContainer key={index} phone={phone} />
+            ));
+        } else {
+            return (
+                <div className="flex items-center justify-center">
+                    You haven't Added any Phone Numbers.
+                </div>
+            );
+        }
+    };
 
     return (
         <Box className="flex flex-col px-2 py-3 gap-6 mt-3">
@@ -22,20 +36,9 @@ const PhonesContainer = () => {
                 <h3 className='text-xl font-mono font-bold'>Phone</h3>
                 <hr className='w-3/4 border-1 border-black' />
             </Box>
-            <Box className="flex justify-end">
-                <Button variant="contained" color="primary"><IoAddCircle className="mr-2" />Add Phone Number</Button>
-
-            </Box>
+            <AddPhoneContainer />
             <Box className="flex flex-col mt-4 py-3">
-                {user?.phoneNumbers?.length > 0 ? (
-                    user.phoneNumbers.map((phone, index) => (
-                        <PhoneContainer key={index} phone={phone} />
-                    ))
-                ) : (
-                    <div className="flex items-center justify-center">
-                        You haven't Added any Phone Numbers.
-                    </div>
-                )}
+                {renderPhoneNumbers()}
             </Box>
         </Box>
     )
