@@ -1,5 +1,6 @@
 // Libraries
 import React, { useState } from 'react';
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
 // Containers
 import ProfileSubContainer from '../containers/Profile/SubContainers/ProfileSubContainer';
@@ -28,6 +29,8 @@ const Profile = () => {
             case 4:
                 return <section>{/* Orders content */}</section>;
             case 5:
+                return <section>{/* Returns content */}</section>;
+            case 6:
                 return <section>{/* Cards content */}</section>;
             default:
                 return null;
@@ -35,8 +38,17 @@ const Profile = () => {
     };
 
     const MenuButton = ({ id, icon: Icon, label }) => (
+        <ListItem button selected={state === id} onClick={() => setState(id)} className="w-full px-3 py-2">
+            <ListItemIcon>
+                <Icon className='text-purple-900' size={24} />
+            </ListItemIcon>
+            <ListItemText primary={label} sx={{ color: 'black' }} />
+        </ListItem>
+    );
+
+    const BarButton = ({ id, icon: Icon, label }) => (
         <button className={`w-full flex items-center px-3 py-2 text-lg text-purple-900 rounded-t-lg lg:rounded-r-3xl ${state === id && 'bg-gray-300'}`} onClick={() => setState(id)} >
-            <Icon className='mr-2' />{label}
+            <Icon className='mr-2' size={24} />{label}
         </button>
     );
 
@@ -51,20 +63,20 @@ const Profile = () => {
             {/* Large Screen Layout */}
             <section className='hidden md:flex md:flex-grow'>
                 <aside className='max-w-80 bg-slate-50 flex flex-col flex-grow py-8 px-4 shadow-md'>
-                    <section className='w-full h-48 flex flex-col items-center justify-center'>
-                        <div className='w-50 flex flex-col items-center justify-center gap-8'>
+                    <section className='w-full h-28 flex flex-col items-center justify-center'>
+                        <div className='w-50 flex items-center justify-center'>
                             <h3 className='text-2xl font-bold'>Settings</h3>
                         </div>
                     </section>
                     <section className='w-full flex px-5 py-2'>
-                        <div className='w-full flex flex-col items-start justify-center gap-6'>
+                        <List className='w-full'>
                             <MenuButton id={1} icon={ImProfile} label="Profile" />
                             <MenuButton id={2} icon={FaLock} label="Security" />
-                            <MenuButton id={3} icon={FaLocationDot} label="Addresses" />
+                            <MenuButton id={3} icon={FaLocationDot} label="Contact" />
                             <MenuButton id={4} icon={RiShoppingBag3Fill} label="Orders" />
                             <MenuButton id={5} icon={MdAssignmentReturn} label="Returns" />
                             <MenuButton id={6} icon={FaCreditCard} label="Cards" />
-                        </div>
+                        </List>
                     </section>
                 </aside>
                 <MainContent />
@@ -80,12 +92,12 @@ const Profile = () => {
                 {barVisible && (
                     <section className='w-full flex px-5 py-2 bg-white shadow-md'>
                         <div className='w-full grid grid-cols-3 items-center justify-center gap-3'>
-                            <MenuButton id={1} icon={ImProfile} label="Profile" />
-                            <MenuButton id={2} icon={FaLock} label="Security" />
-                            <MenuButton id={3} icon={FaLocationDot} label="Addresses" />
-                            <MenuButton id={4} icon={RiShoppingBag3Fill} label="Orders" />
-                            <MenuButton id={5} icon={MdAssignmentReturn} label="Returns" />
-                            <MenuButton id={6} icon={FaCreditCard} label="Cards" />
+                            <BarButton id={1} icon={ImProfile} label="Profile" />
+                            <BarButton id={2} icon={FaLock} label="Security" />
+                            <BarButton id={3} icon={FaLocationDot} label="Addresses" />
+                            <BarButton id={4} icon={RiShoppingBag3Fill} label="Orders" />
+                            <BarButton id={5} icon={MdAssignmentReturn} label="Returns" />
+                            <BarButton id={6} icon={FaCreditCard} label="Cards" />
                         </div>
                     </section>
                 )}

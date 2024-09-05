@@ -1,6 +1,5 @@
 // Librairies
 import React, { useState, useEffect, useContext } from 'react'
-import { useSelector } from 'react-redux';
 import { Box, Button, Avatar } from '@mui/material'
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -17,14 +16,12 @@ import SummaryApi from '../../../common/index';
 // Icons
 import { FaUser } from 'react-icons/fa';
 
-const PictureContainer = () => {
-    // User Data
-    const userState = useSelector(state => state?.user?.user);
+const PictureContainer = ({ user }) => {
+    // Profile Pic
     const [profilePic, setProfilePic] = useState('');
-
     useEffect(() => {
-        setProfilePic(userState?.profilePic || '');
-    }, [userState]);
+        setProfilePic(user?.profilePic || '');
+    }, [user]);
 
     const handleUploadPic = async (e) => {
         const file = e.target.files[0];
@@ -41,7 +38,7 @@ const PictureContainer = () => {
             url: SummaryApi.ChangeProfilePic.url,
             method: SummaryApi.ChangeProfilePic.method,
             data: JSON.stringify({
-                Id: userState?._id,                
+                Id: user?._id,                
                 profilePic: profilePic
             }),
             headers: {
@@ -63,7 +60,7 @@ const PictureContainer = () => {
             url: SummaryApi.RemoveProfilePic.url,
             method: SummaryApi.RemoveProfilePic.method,
             data: JSON.stringify({
-                Id: userState?._id,
+                Id: user?._id,
             }),
             headers: {
                 'Content-Type': 'application/json'

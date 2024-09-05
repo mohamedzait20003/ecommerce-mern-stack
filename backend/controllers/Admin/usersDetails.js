@@ -2,7 +2,7 @@
 const userModel = require("../../models/userModel");
 
 // Controller
-async function usersDetails(req, res) {
+async function usersDetailsController(req, res) {
     try {
         const users = await userModel.find({});
 
@@ -26,4 +26,4 @@ async function usersDetails(req, res) {
     }
 }
 
-module.exports = usersDetails;
+module.exports = usersDetailsController;

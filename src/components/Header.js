@@ -67,14 +67,16 @@ const Header = () => {
                     <img className='w-16 h-10' src={Logo} alt="ZCommerce Logo" />
                     <h1 className='text-4xl text-amber-900 font-extrabold'>ZC</h1>
                 </Link>
-                <div className='hidden w-full lg:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow'>
-                    <input className='w-full outline-none pl-3 pr-2 py-2 rounded-l-full' type='text' placeholder={searchplaceholder} />
-                    <button className='h-10 min-w-[50px] bg-amber-500 flex items-center justify-center rounded-r-full text-white text-2xl font-extrabold'>
-                        <GrSearch />
-                    </button>
-                </div>
+                {(user && user.Role === 'User') && (
+                    <div className='hidden w-full lg:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow'>
+                        <input className='w-full outline-none pl-3 pr-2 py-2 rounded-l-full' type='text' placeholder={searchplaceholder} />
+                        <button className='h-10 min-w-[50px] bg-amber-500 flex items-center justify-center rounded-r-full text-white text-2xl font-extrabold'>
+                            <GrSearch />
+                        </button>
+                    </div>
+                )}
                 <div className='flex items-center gap-12 md:-mr-10'>
-                    { (user && user.Role === 'User') && (
+                    {(user && user.Role === 'User') && (
                         <div className='relative'>
                             <Link to={"cart"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-2xl text-blue-950'>
                                 <FaShoppingCart  />

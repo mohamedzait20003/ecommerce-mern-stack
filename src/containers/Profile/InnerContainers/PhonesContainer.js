@@ -1,20 +1,17 @@
 // Libraries
 import React, {useState, useEffect} from 'react'
 import { Box } from '@mui/material'
-import { useSelector } from 'react-redux';
 
 // Components
 import PhoneContainer from './PhoneContainer';
 import AddPhoneContainer from './AddPhoneContainer';
 
-const PhonesContainer = () => {
+const PhonesContainer = ({ user }) => {
     // User Data
-    const userState = useSelector(state => state?.user?.user);
     const [phones, setPhones] = useState([]);
-
     useEffect(() => {
-        setPhones(userState?.phoneNumbers || []);
-    }, [userState]);
+        setPhones(user?.phoneNumbers || []);
+    }, [user]);
 
     const renderPhoneNumbers = () => {
         if (phones.length > 0) {

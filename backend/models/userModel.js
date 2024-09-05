@@ -1,5 +1,7 @@
+// Libraries
 const mongoose = require('mongoose');
 
+// Schema
 const userSchema = new mongoose.Schema({
     username: String,
     email: {
@@ -27,6 +29,7 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Model
 const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel;
