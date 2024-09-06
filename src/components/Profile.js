@@ -5,6 +5,7 @@ import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 // Containers
 import ProfileSubContainer from '../containers/Profile/SubContainers/ProfileSubContainer';
 import SecuritySubContainer from '../containers/Profile/SubContainers/SecuritySubContainer';
+import ContactSubContainer from '../containers/Profile/SubContainers/ContactSubContainer';
 
 // Icons
 import { FaCreditCard, FaLock, FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -25,7 +26,7 @@ const Profile = () => {
             case 2:
                 return <SecuritySubContainer />;
             case 3:
-                return <section>{/* Addresses content */}</section>;
+                return <ContactSubContainer />;
             case 4:
                 return <section>{/* Orders content */}</section>;
             case 5:
@@ -38,7 +39,7 @@ const Profile = () => {
     };
 
     const MenuButton = ({ id, icon: Icon, label }) => (
-        <ListItem button selected={state === id} onClick={() => setState(id)} className="w-full px-3 py-2">
+        <ListItem button selected={state === id} onClick={() => setState(id)} className="w-full px-3 py-2" sx={{ mb: 3 }}>
             <ListItemIcon>
                 <Icon className='text-purple-900' size={24} />
             </ListItemIcon>

@@ -5,6 +5,9 @@ const userModel = require("../../models/userModel");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// Helper Import
+const { encrypt } = require('../../helpers/encrypt');
+
 async function userLoginController(req, res) {
     try {
         const { email, password } = req.body;
@@ -30,13 +33,15 @@ async function userLoginController(req, res) {
             };
 
             const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: 60 * 60 * 8 });
-
             const tokenOption = {
                 httpOnly: true,
                 secure: true,
             };
 
-            res.cookie("token", token, tokenOption).status(200).json({
+            const encryptionKey = process.env.COOKIE_ENCRYPTION_KEY;
+            const encryptedToken = encrypt(token, encryptionKey);
+
+            res.cookie("token", encryptedToken, tokenOption).status(200).json({
                 message: "Login success",
                 data: token,
                 error: false,
@@ -47,6 +52,7 @@ async function userLoginController(req, res) {
         }
 
     } catch (err) {
+        console.log(err);
         res.json({
             message: err.message || err,
             error: true,

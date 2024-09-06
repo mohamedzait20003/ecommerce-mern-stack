@@ -19,8 +19,8 @@ const userPassChangeController = require('../controllers/User/userPassChange');
 const userDeleteController = require('../controllers/User/userDelete');
 
 // Import Admin Controllers
-const usersDetailsController = require('../controllers/Admin/usersDetails');
-const addUserController = require('../controllers/Admin/addUser');
+const showUsersController = require('../controllers/Admin/showUsers');
+const addCoordinatorController = require('../controllers/Admin/addCoordinator');
 
 // User Routes
 router.post("/signup", userSignupController);
@@ -34,7 +34,7 @@ router.post("/user-delete", userDeleteController);
 router.put("/user-password-change", userPassChangeController);
 
 // Admin Routes
-router.get("/users-details", usersDetailsController);
-router.post("/add-user", addUserController);
+router.get("/show-users", showUsersController);
+router.post("/add-coordinator", addCoordinatorController);
 
 module.exports = router;

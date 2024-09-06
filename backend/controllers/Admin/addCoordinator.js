@@ -5,9 +5,9 @@ const userModel = require("../../models/userModel");
 const bcrypt = require('bcryptjs');
 
 // Controller
-async function addUserController(req, res) {
+async function addCoordinatorController(req, res) {
     try {
-        const { username, email, password, Role } = req.body;
+        const { username, email, password, Role, Phone } = req.body;
 
         const user = await userModel.findOne({email});
         if(user){
@@ -37,8 +37,7 @@ async function addUserController(req, res) {
         const payload = {
             ...req.body,
             password : hashPassword,
-            phone: [],
-            location: []
+            phone: [{Phone}],
         };
 
         const userData = new userModel(payload);
@@ -60,4 +59,4 @@ async function addUserController(req, res) {
     }
 }
 
-module.exports = addUserController;
+module.exports = addCoordinatorController;

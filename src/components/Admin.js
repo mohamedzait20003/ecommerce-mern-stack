@@ -2,8 +2,12 @@
 import React, { useState } from 'react';
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
+// Conatiners
+import DashboardContainer from '../containers/Home/admin/DashboardContainer';
+import UsersContainer from '../containers/Home/admin/UsersContainer';
+
 // Icons
-import { ChartNoAxesCombined, LayoutDashboard, Users, ShoppingBasket, ShoppingBag} from 'lucide-react';
+import { ChartNoAxesCombined, LayoutDashboard, ShoppingBasket, ShoppingBag, Users} from 'lucide-react';
 import { MdAdminPanelSettings, MdAssignmentReturn } from "react-icons/md";
 
 const Admin = () => {
@@ -14,9 +18,9 @@ const Admin = () => {
   const renderContent = () => {
     switch (state) {
       case 1:
-        return <section>{/* Dashboard content */}</section>;
+        return <DashboardContainer />;
       case 2:
-        return <section>{/* Users content */}</section>;
+        return <UsersContainer />;
       case 3:
         return <section>{/* Coordinators content */}</section>;
       case 4:
@@ -31,7 +35,7 @@ const Admin = () => {
   };
 
   const MenuButton = ({ id, icon: Icon, label }) => (
-    <ListItem button selected={state === id} onClick={() => setState(id)} className="w-full px-3 py-2">
+    <ListItem button selected={state === id} onClick={() => setState(id)} className="w-full px-3 py-2" sx={{ mb: 3 }}>
       <ListItemIcon>
         <Icon className='text-purple-900' size={24} />
       </ListItemIcon>
