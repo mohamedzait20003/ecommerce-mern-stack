@@ -1,4 +1,4 @@
-// Model
+// Model Import
 const userModel = require("../../models/userModel");
 
 // Controller

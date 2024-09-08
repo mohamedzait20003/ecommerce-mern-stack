@@ -24,7 +24,14 @@ const userSchema = new mongoose.Schema({
             long: Number,
             lat: Number,
         }
-    ]
+    ],
+    auth: {
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true
+        }
+    }
 }, {
     timestamps: true
 });

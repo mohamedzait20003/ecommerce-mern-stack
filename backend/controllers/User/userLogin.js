@@ -50,9 +50,7 @@ async function userLoginController(req, res) {
         } else {
             throw new Error("Password incorrect");
         }
-
     } catch (err) {
-        console.log(err);
         res.json({
             message: err.message || err,
             error: true,
