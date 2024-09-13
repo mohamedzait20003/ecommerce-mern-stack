@@ -50,4 +50,5 @@ async function userPassChangeController(req,res){
     }
 };
 
+// Export Controller
 module.exports = userPassChangeController;

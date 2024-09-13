@@ -17,4 +17,5 @@ async function userLogoutController(req, res){
     }
 }
 
+// Export Controller
 module.exports = userLogoutController;

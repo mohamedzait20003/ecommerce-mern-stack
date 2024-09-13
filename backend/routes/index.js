@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Import Middleware
 const authToken = require('../middleware/authToken');
+const loginLimiter = require('../middleware/loginLimiter');
 
 // Import User Controllers
 const userSignupController = require('../controllers/User/userSignup');
@@ -28,7 +29,7 @@ const addCoordinatorController = require('../controllers/Admin/addCoordinator');
 
 // User Routes
 router.post("/signup", userSignupController);
-router.post("/login", userLoginController);
+router.post("/login", loginLimiter, userLoginController);
 router.get("/user-details", authToken, userDetailsController);
 router.get("/logout", userLogoutController);
 

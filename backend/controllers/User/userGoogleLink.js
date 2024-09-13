@@ -17,7 +17,7 @@ passport.use('google-link', new GoogleStrategy({
         const userId = req.query.state;
         const user = await userModel.findById(userId);
 
-        user.auth.googleId = profile.id;
+        user.SocialLink.googleId = profile.id;
         const saveUser = await user.save();
 
         done(null, saveUser);

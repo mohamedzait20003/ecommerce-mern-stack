@@ -31,4 +31,5 @@ async function userPicRemoveController(req, res) {
     }
 }
 
+// Export Controller
 module.exports = userPicRemoveController;

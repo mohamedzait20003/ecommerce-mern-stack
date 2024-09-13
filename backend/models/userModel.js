@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
             lat: Number,
         }
     ],
+    SocialLink: {
+        googleId: String,
+        facebookId: String,
+    },
     LinkCheck: {
         google: Boolean,
         facebook: Boolean,

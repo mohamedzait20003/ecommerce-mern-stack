@@ -48,4 +48,5 @@ async function authToken(req, res, next) {
     })(req, res, next);
 }
 
+// Export Middleware
 module.exports = authToken;

@@ -20,4 +20,5 @@ async function userDetailsController(req, res) {
     }
 }
 
+// Export Controller
 module.exports = userDetailsController;
