@@ -38,25 +38,27 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await axios({
-            url: SummaryApi.Login.url,
-            method: SummaryApi.Login.method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(data),
-            withCredentials: true
-        });
-        
-        const DataAPI = response.data;
-        if(DataAPI.success){
-            toast.success(DataAPI.message);
-            navigate('/');
-            fetchUserDetails();
-        }
-        
-        if(DataAPI.error){
-            toast.error(DataAPI.message);
+        try {
+            const response = await axios({
+                url: SummaryApi.Login.url,
+                method: SummaryApi.Login.method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(data),
+                withCredentials: true
+            });
+    
+            const DataAPI = response.data;
+            if (DataAPI.success) {
+                toast.success(DataAPI.message);
+                navigate('/');
+                fetchUserDetails();
+            } else if (DataAPI.error) {
+                toast.error(DataAPI.message);
+            }
+        } catch (error) {
+            toast.error("An error occurred during login.");
         }
     };
 

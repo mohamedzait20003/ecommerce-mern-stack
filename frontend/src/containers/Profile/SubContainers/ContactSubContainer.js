@@ -1,15 +1,18 @@
 // Libraries
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 // Containers
 import PhonesContainer from '../InnerContainers/PhonesContainer';
 
-// Common
-import userData from '../../../common/UserData';
-
 const ContactSubContainer = () => {
-    // User Data
-    const user = userData();
+    const userState = useSelector(state => state?.user?.user);
+    const [user, setUser] = useState(userState);
+
+    useEffect(() => {
+        setUser(userState);
+    }, [userState]);
+
 
     return (
         <section className='w-full px-3'>

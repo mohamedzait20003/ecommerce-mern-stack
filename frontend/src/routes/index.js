@@ -1,7 +1,10 @@
 // Libraries
 import { createBrowserRouter } from 'react-router-dom';
 
-// Components
+// Helpers
+import ProtectedRoute from './protectedroute'; // Ensure correct casing
+
+// Pages
 import App from '../App';
 import Home from '../pages/Home';
 import Cart from '../pages/Cart';
@@ -33,11 +36,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "user-profile",
-                element: <UserProfile />
+                element: (
+                    <ProtectedRoute>
+                        <UserProfile />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "cart",
-                element: <Cart />
+                element: (
+                    <ProtectedRoute>
+                        <Cart />
+                    </ProtectedRoute>
+                )
             }
         ]
     }

@@ -25,12 +25,9 @@ const userSchema = new mongoose.Schema({
             lat: Number,
         }
     ],
-    auth: {
-        googleId: {
-            type: String,
-            unique: true,
-            sparse: true
-        }
+    LinkCheck: {
+        google: Boolean,
+        facebook: Boolean,
     }
 }, {
     timestamps: true

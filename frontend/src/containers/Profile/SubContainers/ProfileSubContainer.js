@@ -1,5 +1,6 @@
 // Libraries
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 // Containers
 import PictureContainer from '../InnerContainers/PictureContainer';
@@ -7,12 +8,13 @@ import NameContainer from '../InnerContainers/NameContainer';
 import DeleteAccount from '../InnerContainers/DeleteAccount';
 import AccountsLink from '../InnerContainers/AccountsLink';
 
-// Common
-import userData from '../../../common/UserData';
-
 const ProfileSubContainer = () => {
-  // User Data
-  const user = userData();
+  const userState = useSelector(state => state?.user?.user);
+    const [user, setUser] = useState(userState);
+
+    useEffect(() => {
+        setUser(userState);
+    }, [userState]);
 
   return (
     <section className='w-full px-3'>

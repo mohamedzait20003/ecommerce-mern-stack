@@ -65,7 +65,7 @@ const Header = () => {
             <div className='h-full container mx-auto flex items-center justify-between px-4'>
                 <Link to={"/"} className='flex flex-row items-center justify-start space-x-2'>
                     <img className='w-16 h-10' src={Logo} alt="ZCommerce Logo" />
-                    <h1 className='text-4xl text-amber-900 font-extrabold'>ZC</h1>
+                    <h1 className='text-4xl text-amber-900 font-extrabold'>ZMart</h1>
                 </Link>
                 {(user && user.Role === 'User') && (
                     <div className='hidden w-full lg:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow'>
@@ -85,24 +85,22 @@ const Header = () => {
                         </div>
                     )}
                     <div className='flex items-center justify-center'>
-                        {
-                            user ? (
-                                <div className='flex flex-row gap-5 items-center'>
-                                    {user?.Role !== 'Admin' && (
-                                        <Link to={"user-profile"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-blue-950'>
-                                            <FaRegUserCircle  />
-                                        </Link>
-                                    )}
-                                    <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-900' onClick={handleLogout}>
-                                        <FaSignOutAlt  />
-                                    </button>
-                                </div>
-                            ) : (
-                                <Link to={"login"} className='h-10 min-w-max bg-amber-500 flex items-center justify-center p-4 rounded-full text-xl font-bold text-white hover:bg-emerald-600 '>
-                                    Login
-                                </Link>
-                            )
-                        }
+                        {user ? (
+                            <div className='flex flex-row gap-5 items-center'>
+                                {user?.Role !== 'Admin' && (
+                                    <Link to={"user-profile"} className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-blue-950'>
+                                        <FaRegUserCircle  />
+                                    </Link>
+                                )}
+                                <button className='h-10 min-w-[50px] bg-transparent flex items-center justify-center rounded-full text-3xl text-slate-900' onClick={handleLogout}>
+                                    <FaSignOutAlt  />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link to={"login"} className='h-10 min-w-max bg-amber-500 flex items-center justify-center p-4 rounded-full text-xl font-bold text-white hover:bg-emerald-600 '>
+                                Login
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
