@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
 // Conatiners
-import DashboardContainer from '../containers/Home/admin/DashboardContainer';
-import UsersContainer from '../containers/Home/admin/UsersContainer';
+import Dashboard from '../../components/Admin/DashBoard';
+import UsersLayout from '../../components/Admin/UsersLayout';
 
 // Icons
 import { ChartNoAxesCombined, LayoutDashboard, ShoppingBasket, ShoppingBag, Users} from 'lucide-react';
@@ -18,9 +18,9 @@ const Admin = () => {
   const renderContent = () => {
     switch (state) {
       case 1:
-        return <DashboardContainer />;
+        return <Dashboard />;
       case 2:
-        return <UsersContainer />;
+        return <UsersLayout />;
       case 3:
         return <section>{/* Coordinators content */}</section>;
       case 4:

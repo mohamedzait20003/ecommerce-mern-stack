@@ -5,13 +5,13 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Helpers
-import imagetobase64 from '../../../helpers/imagetobase64';
+import imagetobase64 from '../../helpers/imagetobase64';
 
 // Context
-import Context from '../../../context/index';
+import Context from '../../context/index';
 
 // Common
-import SummaryApi from '../../../common/index';
+import SummaryApi from '../../common/index';
 
 // Icons
 import { FaUser } from 'react-icons/fa';

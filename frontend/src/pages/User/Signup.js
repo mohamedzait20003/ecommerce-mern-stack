@@ -8,14 +8,14 @@ import axios from 'axios';
 import { TextField, Button, Container, Box, Typography, Avatar, Grid } from '@mui/material';
 
 // Helpers
-import imagetobase64 from '../helpers/imagetobase64';
+import imagetobase64 from '../../helpers/imagetobase64';
 
 // Icons
 import { FaUserPlus, FaTimes } from 'react-icons/fa';
 import { BsCheck2All } from 'react-icons/bs';
 
-// API
-import SummaryApi from '../common/index';
+// Common
+import SummaryApi from '../../common/index';
 
 const Signup = () => {
   // Navigation

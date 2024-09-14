@@ -8,13 +8,13 @@ import axios from 'axios';
 import { TextField, Button, Container, Box, Typography, Grid, } from '@mui/material';
 
 // Context
-import Context from '../context/index';
+import Context from '../../context/index';
 
 // Common
-import SummaryApi from '../common/index';
+import SummaryApi from '../../common/index';
 
 // Images
-import LoginGIF from '../assets/Signin/Login.gif';
+import LoginGIF from '../../assets/Signin/Login.gif';
 
 const Login = () => {
     // Form data
@@ -53,6 +53,7 @@ const Login = () => {
             if (DataAPI.success) {
                 toast.success(DataAPI.message);
                 localStorage.setItem('accessToken', DataAPI.accessToken);
+                localStorage.setItem('userRole', DataAPI.Role);
                 navigate('/');
                 fetchUserDetails();
             } else if (DataAPI.error) {

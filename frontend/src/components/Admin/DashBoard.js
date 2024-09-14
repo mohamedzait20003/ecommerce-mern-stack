@@ -1,9 +1,9 @@
 import React from 'react'
 
-const DashboardContainer = () => {
+const Dashboard = () => {
   return (
     <div>Dashboard</div>
   )
 }
 
-export default DashboardContainer
+export default Dashboard

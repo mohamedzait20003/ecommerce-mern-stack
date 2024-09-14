@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // Containers
-import PictureContainer from '../InnerContainers/PictureContainer';
-import NameContainer from '../InnerContainers/NameContainer';
-import DeleteAccount from '../InnerContainers/DeleteAccount';
-import AccountsLink from '../InnerContainers/AccountsLink';
+import PictureContainer from '../../containers/Profile/PictureContainer';
+import NameContainer from '../../containers/Profile/NameContainer';
+import DeleteAccount from '../../containers/Profile/DeleteAccount';
+import AccountsLink from '../../containers/Profile/AccountsLink';
 
-const ProfileSubContainer = () => {
+const ProfileLayout = () => {
   // User State
   const userState = useSelector(state => state?.user?.user);
   const [user, setUser] = useState(userState);
@@ -27,4 +27,4 @@ const ProfileSubContainer = () => {
   );
 };
 
-export default ProfileSubContainer;
+export default ProfileLayout;

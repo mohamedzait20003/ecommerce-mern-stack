@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Check Auth
   useEffect(() => {
-    const sessionToken = localStorage.getItem('token');
+    const sessionToken = localStorage.getItem('accessToken');
     if (sessionToken) {
       setIsAuthenticated(true);
     } else {

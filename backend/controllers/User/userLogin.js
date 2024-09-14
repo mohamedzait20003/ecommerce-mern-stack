@@ -29,6 +29,7 @@ async function userLoginController(req, res) {
         if (checkPassword) {
             const AccessTokenData = {
                 _id: user._id,
+                role: user.Role,
                 email: user.email,
             };
 
@@ -45,6 +46,7 @@ async function userLoginController(req, res) {
             res.status(200).json({
                 message: "Login success",
                 accessToken: accessToken,
+                Role: user.Role,
                 error: false,
                 success: true,
             });

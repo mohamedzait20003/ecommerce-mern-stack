@@ -2,16 +2,26 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 // Helpers
-import ProtectedRoute from './protectedroute'; // Ensure correct casing
+import ProtectedRoute from './protectedroute'; 
+import RoleRedirect from './roleRedirect';
 
-// Pages
+// Main Pages
 import App from '../App';
-import Home from '../pages/Home';
-import Cart from '../pages/Cart';
-import Login from '../pages/Login';
-import Forgot from '../pages/Forgot';
-import Signup from '../pages/Signup';
-import UserProfile from '../pages/UserProfile';
+import Home from '../pages/User/Home';
+
+// User Pages
+import Login from '../pages/User/Login';
+import Forgot from '../pages/User/Forgot';
+import Signup from '../pages/User/Signup';
+import UserProfile from '../pages/User/UserProfile';
+
+// Admin Pages
+import Admin from '../pages/Admin/Admin';
+
+// Client Pages
+import Client from '../pages/Client/Client';
+import Cart from '../pages/Client/Cart';
+
 
 const router = createBrowserRouter([
     {
@@ -19,8 +29,28 @@ const router = createBrowserRouter([
         element: <App />,
         children: [
             {
-                path: '/',
+                index: true,
+                element: <RoleRedirect />
+            },
+            {
+                path: "home",
                 element: <Home />
+            },
+            {
+                path: "admin",
+                element: (
+                    <ProtectedRoute>
+                        <Admin />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "client",
+                element: (
+                    <ProtectedRoute>
+                        <Client />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "login",

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // Containers
-import PhonesContainer from '../InnerContainers/PhonesContainer';
+import PhonesContainer from '../../containers/Profile/PhonesContainer';
 
 const ContactSubContainer = () => {
     const userState = useSelector(state => state?.user?.user);

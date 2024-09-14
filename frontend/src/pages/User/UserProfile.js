@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
 // Containers
-import ProfileSubContainer from '../containers/Profile/SubContainers/ProfileSubContainer';
-import SecuritySubContainer from '../containers/Profile/SubContainers/SecuritySubContainer';
-import ContactSubContainer from '../containers/Profile/SubContainers/ContactSubContainer';
+import ProfileLayout from '../../components/Profile/ProfileLayout';
+import SecurityLayout from '../../components/Profile/SecurityLayout';
+import ContactSubContainer from '../../components/Profile/ContactLayout';
 
 // Icons
 import { FaCreditCard, FaLock, FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -22,9 +22,9 @@ const Profile = () => {
     const renderContent = () => {
         switch (state) {
             case 1:
-                return <ProfileSubContainer />;
+                return <ProfileLayout />;
             case 2:
-                return <SecuritySubContainer />;
+                return <SecurityLayout />;
             case 3:
                 return <ContactSubContainer />;
             case 4:

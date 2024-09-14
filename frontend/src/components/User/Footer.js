@@ -2,9 +2,7 @@
 import React from 'react'
 
 // Components
-import LargeFooterContainer from '../containers/Footer/LargeFooterContainer';
-import MediumFooterContainer from '../containers/Footer/MediumFooterContainer';
-import SmallFooterContainer from '../containers/Footer/SmallFooterContainer';
+import FooterContainer from '../../containers/Footer/FooterContainer';
 
 // Footer Links
 const FooterData = [
@@ -75,14 +73,8 @@ const Footer = () => {
         Back to top
       </button>
 
-      {/* Large Screens */}
-      <LargeFooterContainer Data={FooterData} />
-
-      {/* Medium Screens */}
-      <MediumFooterContainer Data={FooterData} />
-
-      {/* Small Screens */}
-      <SmallFooterContainer Data={FooterData} />
+      {/* Footer Container */}
+      <FooterContainer Data={FooterData} />
 
       <div className='bg-slate-300 py-3'>
         <p className='text-center'>All Rights Reserved &copy; 2024 to Mohammed Zaitoun</p>

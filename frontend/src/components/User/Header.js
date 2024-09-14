@@ -6,13 +6,13 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 
 // Context
-import { setUser } from '../stores/slices/userSlice'
+import { setUser } from '../../stores/slices/userSlice'
 
 // Common
-import SummaryApi from '../common/index';
+import SummaryApi from '../../common/index';
 
 // Logo
-import Logo from '../assets/Logo/Logo.svg'
+import Logo from '../../assets/Logo/Logo.svg'
 
 // Icons
 import { GrSearch } from 'react-icons/gr'
@@ -36,6 +36,8 @@ const Header = () => {
                 dispatch(setUser(null));
                 navigate("/");
                 toast.success(response.data.message);
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('userRole');
             } else if (response.data.error) {
                 toast.error(response.data.error);
             }

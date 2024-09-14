@@ -24,6 +24,8 @@ const useFetchUserDetails = () => {
     
       if (response_data.success) {
         dispatch(setUser(response_data.data));
+      } else {
+        localStorage.removeItem('accessToken');
       }
     })
     .catch(error => {

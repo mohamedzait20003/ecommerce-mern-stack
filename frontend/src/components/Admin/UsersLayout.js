@@ -1,9 +1,9 @@
 import React from 'react'
 
-const UsersContainer = () => {
+const UsersLayout = () => {
   return (
     <div>Users</div>
   )
 }
 
-export default UsersContainer
+export default UsersLayout

@@ -8,8 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import './App.css';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Header from './components/User/Header';
+import Footer from './components/User/Footer';
 
 // Context
 import Context from './context/index';
