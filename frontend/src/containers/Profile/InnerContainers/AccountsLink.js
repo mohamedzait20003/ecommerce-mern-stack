@@ -10,9 +10,9 @@ import { FaFacebookSquare } from "react-icons/fa";
 
 const AccountsLink = ({ user }) => {
     // Auth State
-    const [auth, setAuth] = useState({});
+    const [LinkCheck, setLinkCheck] = useState(null);
     useEffect(() => {
-        setAuth(user?.auth);
+        setLinkCheck(user?.LinkCheck);
     }, [user]);
 
     // Dialog State
@@ -46,7 +46,7 @@ const AccountsLink = ({ user }) => {
                 <hr className='w-3/4 border-1 border-black' />
             </Box>
             <Box className='flex flex-row items-center justify-evenly mt-4'>
-                {auth?.googleId ? (
+                {LinkCheck?.google ? (
                     <Button className='flex gap-2' onClick={openDialog} sx={{ px: 3, py:2, border: '2px solid black', borderRadius: '10px', backgroundColor: '#d2f1e2', '&:hover': { backgroundColor: '#eabfbf'}  }}>
                         <MdOutlineDoneOutline size={24} className='text-4xl' />
                         <h3 className='text-xl font-mono font-bold text-black'>

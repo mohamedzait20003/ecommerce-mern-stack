@@ -2,7 +2,6 @@
 import React, {useState, useEffect, useCallback, useContext} from 'react';
 import { Box, TextField, Button, Typography, Grid } from '@mui/material';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 // Context
@@ -15,14 +14,7 @@ import SummaryApi from '../../../common/index';
 import { FaTimes } from 'react-icons/fa';
 import { BsCheck2All } from 'react-icons/bs';
 
-const PassContainer = () => {
-    // User Data
-    const userState = useSelector(state => state?.user?.user);
-    const [user, setUser] = useState(userState);
-    useEffect(() => {
-        setUser(userState);
-    }, [userState]);
-
+const PassContainer = ({ user }) => {
     // Password Change Data
     const [PassInput, setPassInput] = useState(false);
     const [Pass, setPass] = useState({

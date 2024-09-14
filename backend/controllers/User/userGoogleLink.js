@@ -18,6 +18,7 @@ passport.use('google-link', new GoogleStrategy({
         const user = await userModel.findById(userId);
 
         user.SocialLink.googleId = profile.id;
+        user.LinkCheck.google = true;
         const saveUser = await user.save();
 
         done(null, saveUser);
@@ -38,8 +39,10 @@ exports.linkGoogleAccount = (req, res, next) => {
 exports.linkGoogleAccountCallback = (req, res, next) => {
     passport.authenticate("google-link", (err, user, info) => {
         if (err) {
-            return res.redirect('http://localhost:3000/user-profile');
+            res.cookie('status', 'failure', { httpOnly: true });
         }
+        
+        res.cookie('status', 'success', { httpOnly: true });
         res.redirect('http://localhost:3000/user-profile');
     })(req, res, next);
 };

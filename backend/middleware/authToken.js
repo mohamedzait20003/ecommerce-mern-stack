@@ -7,14 +7,19 @@ const { decrypt } = require('../helpers/decrypt');
 
 // Passport Configuration
 const opts = {
-    jwtFromRequest: ExtractJwt.fromExtractors([(req) => {
-        const encryptedToken = req.cookies?.token;
-        if (encryptedToken) {
-          return decrypt(encryptedToken, process.env.COOKIE_ENCRYPTION_KEY);
-        }
+  jwtFromRequest: ExtractJwt.fromExtractors([(req) => {
+    const encryptedToken = req.cookies?.accessToken;
+    if (encryptedToken) {
+      try {
+        const decryptedToken = decrypt(encryptedToken, process.env.COOKIE_ENCRYPTION_KEY);
+        return decryptedToken;
+      } catch (error) {
         return null;
-    }]),
-    secretOrKey: process.env.TOKEN_SECRET,
+      }
+    }
+    return null;
+  }]),
+  secretOrKey: process.env.ACCESS_TOKEN_SECRET,
 };
 
 passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
@@ -31,17 +36,19 @@ async function authToken(req, res, next) {
       if (err) {
         return res.json({
           message: err.message || err,
-          data: [],
           error: true,
           success: false,
         });
       }
+
       if (!user) {
-        return res.status(200).json({
-          message: "User not Login",
-          error: true,
-          success: false,
-        });
+        const tokenOption = {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'Strict'
+        };
+
+        res.clearCookie("accessToken", tokenOption);
       }
       req.userId = user._id;
       next();

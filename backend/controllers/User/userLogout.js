@@ -1,12 +1,18 @@
 // Controller
 async function userLogoutController(req, res){
-    try{
-        res.clearCookie('token');
+    try {
+        const tokenOption = {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Strict'
+        };
+
+        res.clearCookie("accessToken", tokenOption);
+
         res.status(200).json({
-            message: "Logged Out Successfully",
-            data: [],
+            message: "Logout successful",
             error: false,
-            success: true
+            success: true,
         });
     } catch (err) {
         res.status(400).json({

@@ -27,24 +27,24 @@ async function userLoginController(req, res) {
         const checkPassword = await bcrypt.compare(password, user.password);
         
         if (checkPassword) {
-            const tokenData = {
+            const AccessTokenData = {
                 _id: user._id,
                 email: user.email,
             };
 
-            const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: "8h" });
+            const accessToken = await jwt.sign(AccessTokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "7d" });
+            const encryptedaccessToken = encrypt(accessToken, process.env.COOKIE_ENCRYPTION_KEY);
             const tokenOption = {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'Strict'
             };
 
-            const encryptionKey = process.env.COOKIE_ENCRYPTION_KEY;
-            const encryptedToken = encrypt(token, encryptionKey);
+            res.cookie("accessToken", encryptedaccessToken, tokenOption);
 
-            res.cookie("token", encryptedToken, tokenOption).status(200).json({
+            res.status(200).json({
                 message: "Login success",
-                data: token,
+                accessToken: accessToken,
                 error: false,
                 success: true,
             });

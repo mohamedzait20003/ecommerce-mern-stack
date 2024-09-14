@@ -13,6 +13,10 @@ const SummaryApi = {
         url: `${backendDomain}/api/user-details`,
         method: 'get'
     },
+    refresh_token: {
+        url: `${backendDomain}/api/refresh-token`,
+        method: 'get'
+    },
     Logout: {
         url: `${backendDomain}/api/logout`,
         method: 'get'

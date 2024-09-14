@@ -52,6 +52,7 @@ const Login = () => {
             const DataAPI = response.data;
             if (DataAPI.success) {
                 toast.success(DataAPI.message);
+                localStorage.setItem('accessToken', DataAPI.accessToken);
                 navigate('/');
                 fetchUserDetails();
             } else if (DataAPI.error) {

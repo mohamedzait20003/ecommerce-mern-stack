@@ -12,7 +12,7 @@ import SummaryApi from '../../../common/index';
 
 const NameContainer = ({ user }) => {
     // User Data
-    const [userName, setUserName] = useState('');
+    const [userName, setUserName] = useState(null);
     useEffect(() => {
         setUserName(user?.username || '');
     }, [user]);

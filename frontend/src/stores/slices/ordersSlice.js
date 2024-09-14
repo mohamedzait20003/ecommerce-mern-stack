@@ -12,7 +12,7 @@ export const ordersSlice = createSlice({
     initialState,
     reducers: {
         setOrders: (state, action) => {
-            state.user = action.payload;
+            state.orders = action.payload;
         },
     },
 });

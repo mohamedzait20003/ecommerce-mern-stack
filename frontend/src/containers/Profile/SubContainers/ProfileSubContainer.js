@@ -9,12 +9,13 @@ import DeleteAccount from '../InnerContainers/DeleteAccount';
 import AccountsLink from '../InnerContainers/AccountsLink';
 
 const ProfileSubContainer = () => {
+  // User State
   const userState = useSelector(state => state?.user?.user);
-    const [user, setUser] = useState(userState);
+  const [user, setUser] = useState(userState);
 
-    useEffect(() => {
-        setUser(userState);
-    }, [userState]);
+  useEffect(() => {
+      setUser(userState);
+  }, [userState]);
 
   return (
     <section className='w-full px-3'>

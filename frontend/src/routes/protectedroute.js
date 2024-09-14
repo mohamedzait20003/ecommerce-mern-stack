@@ -1,18 +1,26 @@
 // Libraries
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-
 
 const ProtectedRoute = ({ children }) => {
-    const userState = useSelector(state => state?.user?.user);
-    const [user, setUser] = useState(userState);
+  // Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-      setUser(userState);
-    }, [userState]);
+  // Check Auth
+  useEffect(() => {
+    const sessionToken = localStorage.getItem('token');
+    if (sessionToken) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+    setIsLoading(false); 
+  }, []);
 
-    return user ? children : <Navigate to='/login' />;
+  if (!isLoading) {
+    return isAuthenticated ? children : <Navigate to='/login' />;
+  }
 };
 
 export default ProtectedRoute;

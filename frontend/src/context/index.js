@@ -1,41 +1,25 @@
 // Libraries
 import { createContext, useCallback } from "react";
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
 
-// Redux Actions
-import { setUser } from '../stores/slices/userSlice';
-
-// Summary Api
-import SummaryApi from '../common/index';
+// Custom Hooks
+import useFetchUserDetails from './hooks/UserDetails';
 
 // Context Creation
 const Context = createContext(null);
 
+// Context Provider
 export const ContextProvider = ({ children }) => {
-  const dispatch = useDispatch();
+  // Custom Hooks
+  const fetchUserDetails = useFetchUserDetails();
 
-  const fetchUserDetails = useCallback(async () => {
-    try {
-      const response = await axios({
-        url: SummaryApi.current_user.url,
-        method: SummaryApi.current_user.method,
-        withCredentials: true
-      });
+  const fetchCartDetails = useCallback(async () => {
+  }, []);
 
-      const response_data = response.data;
-      console.log("User Details:", response_data);
-
-      if (response_data.success) {
-        dispatch(setUser(response_data.data));
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  }, [dispatch]);
+  const fetchOrdersDetails = useCallback(async () => {
+  }, []);
 
   return (
-    <Context.Provider value={{ fetchUserDetails }}>
+    <Context.Provider value={{ fetchUserDetails, fetchCartDetails, fetchOrdersDetails }}>
       {children}
     </Context.Provider>
   );
