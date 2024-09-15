@@ -10,6 +10,7 @@ const loginLimiter = require('../middleware/loginLimiter');
 const userSignupController = require('../controllers/User/userSignup');
 const userLoginController = require('../controllers/User/userLogin');
 const userDetailsController = require('../controllers/User/userDetails');
+const userRefreshController = require('../controllers/User/userRefresh');
 const userLogoutController = require('../controllers/User/userLogout');
 
 // Import User Profile Controllers
@@ -31,14 +32,15 @@ const addCoordinatorController = require('../controllers/Admin/addCoordinator');
 router.post("/signup", userSignupController);
 router.post("/login", loginLimiter, userLoginController);
 router.get("/user-details", authToken, userDetailsController);
+router.get("/refresh", authToken, userRefreshController);
 router.get("/logout", userLogoutController);
 
 // User Profile Routes
-router.put("/user-pic-change", userPicChangeController);
-router.put("/user-pic-remove", userPicRemoveController);
-router.put("/user-name-change", userNameChangeController);
-router.post("/user-delete", userDeleteController);
-router.put("/user-password-change", userPassChangeController);
+router.put("/user-pic-change", authToken, userPicChangeController);
+router.put("/user-pic-remove", authToken, userPicRemoveController);
+router.put("/user-name-change", authToken, userNameChangeController);
+router.post("/user-delete", authToken, userDeleteController);
+router.put("/user-password-change", authToken, userPassChangeController);
 
 // User Google OAuth Routes
 router.get('/link-google', userGoogleLinkController.linkGoogleAccount);

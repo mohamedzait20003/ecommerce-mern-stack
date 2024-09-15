@@ -5,50 +5,43 @@ const userModel = require("../../models/userModel");
 const bcrypt = require('bcryptjs');
 
 // Controller
-async function userPassChangeController(req,res){
-    try{
-        const { Id, Oldpass, password } = req.body;
+async function userPassChangeController(req, res) {
+    try {
+        const { Oldpass, password } = req.body;
 
-        const user = await userModel.findById(Id);
-        if(!user){
-            throw new Error("User not found");
-        }
+        // Fetch the user by ID
+        const user = await userModel.findById(req.userId);
 
+        // Check if the old password is correct
         const checkPassword = await bcrypt.compare(Oldpass, user.password);
-        if(!checkPassword){
-           throw new Error("Old Password incorrect");
+        if (!checkPassword) {
+            throw new Error("Old Password incorrect");
         }
 
+        // Generate a new hashed password
         const salt = bcrypt.genSaltSync(10);
         const hashPassword = await bcrypt.hashSync(password, salt);
 
-        if(!hashPassword){
-            throw new Error("Something is wrong")
-        }
-
+        // Update the user's password
         const updateUser = await userModel.findByIdAndUpdate(
-            Id,
+            req.userId,
             { password: hashPassword },
             { new: true }
         );
 
-        if(!updateUser){
-            throw new Error("Something is wrong");
-        }
-
         res.status(200).json({
-            message : "Password changed Successfully!",
-            success : true,
-            error : false
+            message: "Password changed Successfully!",
+            success: true,
+            error: false
         });
-    } catch (err){
+    } catch (err) {
         res.json({
-            message : err.message || err,
-            error : true,
-            success : false,
+            message: err.message || err,
+            error: true,
+            success: false,
         });
     }
-};
+}
 
 // Export Controller
 module.exports = userPassChangeController;

@@ -4,10 +4,10 @@ const userModel = require("../../models/userModel");
 // Controller
 async function userNameChangeController(req,res){
     try{
-        const { Id, username } = req.body;
+        const { username } = req.body;
 
         const updateUser = await userModel.findByIdAndUpdate(
-            Id,
+            req.userId,
             { username: username },
             { new: true }
         );

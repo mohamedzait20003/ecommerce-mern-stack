@@ -7,7 +7,6 @@ import { FcGoogle } from "react-icons/fc";
 import { MdOutlineDoneOutline } from "react-icons/md";
 import { FaFacebookSquare } from "react-icons/fa";
 
-
 const AccountsLink = ({ user }) => {
     // Auth State
     const [LinkCheck, setLinkCheck] = useState(null);

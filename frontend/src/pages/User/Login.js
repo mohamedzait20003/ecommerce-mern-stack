@@ -34,7 +34,7 @@ const Login = () => {
     };
 
     const navigate = useNavigate();
-    const { fetchUserDetails } = useContext(Context);
+    const { userAccess, fetchUserDetails } = useContext(Context);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,9 +53,9 @@ const Login = () => {
             if (DataAPI.success) {
                 toast.success(DataAPI.message);
                 localStorage.setItem('accessToken', DataAPI.accessToken);
-                localStorage.setItem('userRole', DataAPI.Role);
-                navigate('/');
+                userAccess();
                 fetchUserDetails();
+                navigate('/');
             } else if (DataAPI.error) {
                 toast.error(DataAPI.message);
             }

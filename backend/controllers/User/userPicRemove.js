@@ -4,10 +4,8 @@ const userModel = require("../../models/userModel");
 // Controller
 async function userPicRemoveController(req, res) {
     try {
-        const { Id } = req.body;
-
         const updateUser = await userModel.findByIdAndUpdate(
-            Id,
+            req.userId,
             { profilePic: "" },
             { new: true }
         );

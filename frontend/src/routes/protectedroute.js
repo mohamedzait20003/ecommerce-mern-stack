@@ -1,25 +1,31 @@
 // Libraries
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+// Context
+import Context from '../context';
 
 const ProtectedRoute = ({ children }) => {
   // Auth State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const isAuthorized = useSelector(state => state?.auth?.Authorized);
+
+  // Context
+  const { userAccess } = useContext(Context);
 
   // Check Auth
+  const AccessCheck = useCallback(async () => {
+    await userAccess();
+    setIsLoading(false);
+  }, [userAccess]);
+  
   useEffect(() => {
-    const sessionToken = localStorage.getItem('accessToken');
-    if (sessionToken) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-    setIsLoading(false); 
-  }, []);
+    AccessCheck();
+  }, [isAuthorized ,AccessCheck]);
 
   if (!isLoading) {
-    return isAuthenticated ? children : <Navigate to='/login' />;
+    return isAuthorized ? children : <Navigate to='/login' />;
   }
 };
 

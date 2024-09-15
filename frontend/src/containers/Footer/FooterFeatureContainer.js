@@ -12,13 +12,11 @@ const FooterFeatureContainer = ({ FeatureData }) => {
         <div className='mb-2'>
             <div className='bg-[#556294] flex flex-row items-center justify-between px-6 py-8'>
                 <h2 className='text-white text-lg font-bold'>{FeatureData.title}</h2>
-                <button className='flex h-10 w-10 p-3 text-white border-2 border-whie rounded-full' onClick={() => setIsOpen(!isOpen)}>
-                    {
-                        isOpen ?
-                            <FaArrowLeft />
-                        :
-                            <FaArrowDown />
-                    }
+                <button
+                    className={`flex h-10 w-10 p-3 text-white border-2 border-white rounded-full ${isOpen ? 'rotate-90' : 'rotate-0'}`}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    {isOpen ? <FaArrowLeft /> : <FaArrowDown />}
                 </button>
             </div>
             {

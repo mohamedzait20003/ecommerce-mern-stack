@@ -5,13 +5,13 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Helpers
-import imagetobase64 from '../../helpers/imagetobase64';
+import imagetobase64 from '../../../helpers/imagetobase64';
 
 // Context
-import Context from '../../context/index';
+import Context from '../../../context/index';
 
 // Common
-import SummaryApi from '../../common/index';
+import SummaryApi from '../../../common/index';
 
 // Icons
 import { FaUser } from 'react-icons/fa';
@@ -56,23 +56,21 @@ const PictureContainer = ({ user }) => {
 
     const handleRemovePic = async (e) => {
         e.preventDefault();
-        const response = await axios({
+        axios({
             url: SummaryApi.RemoveProfilePic.url,
             method: SummaryApi.RemoveProfilePic.method,
-            data: JSON.stringify({
-                Id: user?._id,
-            }),
             headers: {
                 'Content-Type': 'application/json'
             },
+            withCredentials: true,
+        }).then(response => {
+            if (response.data.success) {
+                toast.success(response.data.message);
+                fetchUserDetails();
+            }
+        }).catch(error => {
+            console.error("Error removing profile pic:", error);
         });
-
-        if (response.data.success) {
-            toast.success(response.data.message);
-            fetchUserDetails();
-        } else {
-            toast.error(response.data.message);
-        }
     }
 
     return (

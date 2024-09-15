@@ -4,8 +4,7 @@ const userModel = require("../../models/userModel");
 // Controller
 async function userDeleteController(req, res) {
     try{
-        const { Id } = req.body;
-        await userModel.findByIdAndDelete(Id);
+        await userModel.findByIdAndDelete(req.userId);
 
         return res.json({ 
             success: true, 

@@ -6,9 +6,6 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-// Helper Import
-const { encrypt } = require('../../helpers/encrypt');
-
 // Passport Configuration
 passport.use('google-login', new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -19,17 +16,19 @@ passport.use('google-login', new GoogleStrategy({
     try {
         let user = await userModel.findOne({ googleId: profile.id });
 
-        const tokenData = {
+        const RefreshTokenData = {
             _id: user._id,
             email: user.email,
         };
+        const AccessTokenData = {
+            key: crypto.randomBytes(64).toString('hex'),
+            role: user.Role,
+        }
 
-        const token = jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: '8h' });
-
-        const encryptionKey = process.env.COOKIE_ENCRYPTION_KEY;
-        const encryptedToken = encrypt(token, encryptionKey);
-
-        done(null, { token: encryptedToken });
+        const accessToken = await jwt.sign(AccessTokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+        const refreshToken = await jwt.sign(RefreshTokenData, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+        
+        done(null, { accessToken: accessToken, refreshToken: refreshToken });
     } catch (err) {
         done(err, null);
     }
@@ -40,14 +39,15 @@ exports.googleLogin = passport.authenticate('google-login', { scope: ['profile',
 
 exports.googleLoginCallback = (req, res) => {
     passport.authenticate('google-login', (err, data) => {
-        const { token } = data;
+        const { accessToken, refreshToken } = data;
 
         const tokenOption = {
             httpOnly: true,
             secure: true,
         };
 
-        res.cookie("accessToken", token, tokenOption);
+        res.cookie("accessToken", accessToken, tokenOption);
+        res.cookie("refreshToken", refreshToken, tokenOption);
         res.redirect('http://localhost:3000');
     })(req, res);
 };

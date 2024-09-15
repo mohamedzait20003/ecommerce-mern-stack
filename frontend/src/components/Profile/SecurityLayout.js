@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // Containers
-import PassContainer from '../../containers/Profile/PassContainer';
+import PassContainer from '../../containers/Profile/SecurityLayout/PassContainer';
 
 const SecuritySubContainer = () => {
   // User State
-  const userState = useSelector(state => state?.user?.user);
+  const userState = useSelector(state => state?.auth?.user);
   const [user, setUser] = useState(userState);
 
   useEffect(() => {

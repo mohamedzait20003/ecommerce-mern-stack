@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Context
-import Context from '../../context/index';
+import Context from '../../../context/index';
 
 // Common
-import SummaryApi from '../../common/index';
+import SummaryApi from '../../../common/index';
 
 const NameContainer = ({ user }) => {
     // User Data
@@ -29,13 +29,13 @@ const NameContainer = ({ user }) => {
         const response = await axios({
             url: SummaryApi.ChangeUsername.url,
             method: SummaryApi.ChangeUsername.method,
-            data: JSON.stringify({
-                Id: user?._id,                
+            data: JSON.stringify({        
                 username: newUsername
             }),
             headers: {
                 'Content-Type': 'application/json'
             },
+            withCredentials: true
         });
 
         if (response.data.success) {

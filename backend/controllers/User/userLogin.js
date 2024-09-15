@@ -2,11 +2,9 @@
 const userModel = require("../../models/userModel");
 
 // Library Import
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-// Helper Import
-const { encrypt } = require('../../helpers/encrypt');
 
 async function userLoginController(req, res) {
     try {
@@ -27,26 +25,29 @@ async function userLoginController(req, res) {
         const checkPassword = await bcrypt.compare(password, user.password);
         
         if (checkPassword) {
-            const AccessTokenData = {
+            const RefreshTokenData = {
                 _id: user._id,
-                role: user.Role,
                 email: user.email,
             };
+            const AccessTokenData = {
+                key: crypto.randomBytes(64).toString('hex'),
+                role: user.Role,
+            }
 
-            const accessToken = await jwt.sign(AccessTokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "7d" });
-            const encryptedaccessToken = encrypt(accessToken, process.env.COOKIE_ENCRYPTION_KEY);
+            const accessToken = await jwt.sign(AccessTokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+            const refreshToken = await jwt.sign(RefreshTokenData, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+            
             const tokenOption = {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'Strict'
             };
 
-            res.cookie("accessToken", encryptedaccessToken, tokenOption);
+            res.cookie("refreshToken", refreshToken, tokenOption);
 
             res.status(200).json({
                 message: "Login success",
                 accessToken: accessToken,
-                Role: user.Role,
                 error: false,
                 success: true,
             });

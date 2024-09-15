@@ -1,10 +1,11 @@
 // Libraries
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RoleRedirect = () => {
     const navigate = useNavigate();
-    const userRole = localStorage.getItem('userRole');
+    const userRole = useSelector(state => state?.auth?.Role);
 
     useEffect(() => {
         if (userRole === 'Admin') {

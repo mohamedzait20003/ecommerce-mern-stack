@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 
 // Context
-import { setUser } from '../../stores/slices/userSlice'
+import { setUser } from '../../stores/slices/authSlice'
 
 // Common
 import SummaryApi from '../../common/index';
@@ -22,7 +22,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const user = useSelector(state => state?.user?.user);
+    const user = useSelector(state => state?.auth?.user);
     
     const handleLogout = async () => {
         try{

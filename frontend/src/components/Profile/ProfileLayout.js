@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // Containers
-import PictureContainer from '../../containers/Profile/PictureContainer';
-import NameContainer from '../../containers/Profile/NameContainer';
-import DeleteAccount from '../../containers/Profile/DeleteAccount';
-import AccountsLink from '../../containers/Profile/AccountsLink';
+import PictureContainer from '../../containers/Profile/ProfileLayout/PictureContainer';
+import NameContainer from '../../containers/Profile/ProfileLayout/NameContainer';
+import DeleteAccount from '../../containers/Profile/ProfileLayout/DeleteAccount';
+import AccountsLink from '../../containers/Profile/SecurityLayout/AccountsLink';
 
 const ProfileLayout = () => {
   // User State
-  const userState = useSelector(state => state?.user?.user);
+  const userState = useSelector(state => state?.auth?.user);
   const [user, setUser] = useState(userState);
 
   useEffect(() => {

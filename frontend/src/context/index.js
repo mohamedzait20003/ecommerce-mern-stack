@@ -2,6 +2,7 @@
 import { createContext, useCallback } from "react";
 
 // Custom Hooks
+import useUserAccess from "./hooks/UserAccess";
 import useFetchUserDetails from './hooks/UserDetails';
 
 // Context Creation
@@ -10,6 +11,7 @@ const Context = createContext(null);
 // Context Provider
 export const ContextProvider = ({ children }) => {
   // Custom Hooks
+  const userAccess = useUserAccess();
   const fetchUserDetails = useFetchUserDetails();
 
   const fetchCartDetails = useCallback(async () => {
@@ -19,7 +21,7 @@ export const ContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <Context.Provider value={{ fetchUserDetails, fetchCartDetails, fetchOrdersDetails }}>
+    <Context.Provider value={{ userAccess, fetchUserDetails, fetchCartDetails, fetchOrdersDetails }}>
       {children}
     </Context.Provider>
   );

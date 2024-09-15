@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
 // Redux Actions
-import { setUser } from '../../stores/slices/userSlice';
+import { setUser, setAuthorized } from '../../stores/slices/authSlice';
 
 // Summary Api
 import SummaryApi from '../../common/index';
@@ -26,6 +26,8 @@ const useFetchUserDetails = () => {
         dispatch(setUser(response_data.data));
       } else {
         localStorage.removeItem('accessToken');
+        dispatch(setAuthorized(false));
+        dispatch(setUser(null));
       }
     })
     .catch(error => {

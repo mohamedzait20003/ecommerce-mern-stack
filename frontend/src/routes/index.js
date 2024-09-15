@@ -14,6 +14,7 @@ import Login from '../pages/User/Login';
 import Forgot from '../pages/User/Forgot';
 import Signup from '../pages/User/Signup';
 import UserProfile from '../pages/User/UserProfile';
+import PassChange from '../pages/User/PassChange';
 
 // Admin Pages
 import Admin from '../pages/Admin/Admin';
@@ -70,7 +71,17 @@ const router = createBrowserRouter([
                     <ProtectedRoute>
                         <UserProfile />
                     </ProtectedRoute>
-                )
+                ),
+                children: [
+                    {
+                        path: "password-change",
+                        element: (
+                            <ProtectedRoute>
+                                <PassChange />
+                            </ProtectedRoute>
+                        )
+                    }
+                ]
             },
             {
                 path: "cart",

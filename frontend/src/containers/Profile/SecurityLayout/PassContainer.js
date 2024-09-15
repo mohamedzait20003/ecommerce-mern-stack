@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Context
-import Context from '../../context/index';
+import Context from '../../../context/index';
 
 // Common
-import SummaryApi from '../../common/index';
+import SummaryApi from '../../../common/index';
 
 // Icons
 import { FaTimes } from 'react-icons/fa';
@@ -74,25 +74,26 @@ const PassContainer = ({ user }) => {
     const handlePasswordChange = async(e) => {
         e.preventDefault();
 
-        const response = await axios({
+        axios({
             url: SummaryApi.ChangePassword.url,
             method: SummaryApi.ChangePassword.method,
             data: JSON.stringify({
-                Id: user?._id,
                 Oldpass: Pass.oldPassword,
                 password: Pass.newPassword
             }),
             headers: {
                 'Content-Type': 'application/json'
             },
+            withCredentials: true,
+        }).then(response => {
+            if (response.data.success) {
+                toast.success(response.data.message);
+                resetPassState();
+                fetchUserDetails();
+            }
+        }).catch(error => {
+            console.error("Error changing password:", error);
         });
-
-        if (response.data.success) {
-            console.log(response.data.message);
-            toast.success(response.data.message);
-            resetPassState();
-            fetchUserDetails();
-        }
     }
 
     return (

@@ -7,7 +7,7 @@ async function userLogoutController(req, res){
             sameSite: 'Strict'
         };
 
-        res.clearCookie("accessToken", tokenOption);
+        res.clearCookie("refreshToken", tokenOption);
 
         res.status(200).json({
             message: "Logout successful",

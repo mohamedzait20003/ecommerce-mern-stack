@@ -4,7 +4,7 @@ const userModel = require("../../models/userModel");
 // Controller
 async function userDetailsController(req, res) {
     try{
-        const user = await userModel.findById(req.userId).select('-password -SocialLink -createdAt -updatedAt -__v');
+        const user = await userModel.findById(req.userId).select('-_id -Role -password -SocialLink -createdAt -updatedAt -__v');
         res.status(200).json({
             data: user,
             error: false,

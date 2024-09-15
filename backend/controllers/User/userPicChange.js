@@ -4,14 +4,14 @@ const userModel = require("../../models/userModel");
 // Controller
 async function userPicChangeController(req, res) {
     try {
-        const { Id, profilePic } = req.body;
+        const { profilePic } = req.body;
 
         if (!profilePic) {
             throw new Error("Pic is required");
         }
 
         const updateUser = await userModel.findByIdAndUpdate(
-            Id,
+            req.userId,
             { profilePic: profilePic },
             { new: true }
         );

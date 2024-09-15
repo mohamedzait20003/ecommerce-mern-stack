@@ -6,10 +6,10 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 
 // Context
-import Context from '../../context/index';
+import Context from '../../../context/index';
 
 // Common
-import SummaryApi from '../../common/index'
+import SummaryApi from '../../../common/index'
 
 const DeleteAccount = ({ user }) => {
     // Dialog State
@@ -34,13 +34,10 @@ const DeleteAccount = ({ user }) => {
         const response = await axios({
             url: SummaryApi.DeleteAccount.url,
             method: SummaryApi.DeleteAccount.method,
-            data: JSON.stringify({
-                Id: user?._id
-            }),
             headers: {
                 'Content-Type': 'application/json'
             },
-
+            withCredentials: true,
         });
 
         if (response.data.success) {
