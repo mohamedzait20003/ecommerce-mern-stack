@@ -14,7 +14,7 @@ const useUserAccess = () => {
     // Redux Dispatch
     const dispatch = useDispatch();
 
-    const RefreshToken = useCallback(async () => {
+    const refreshAccess = useCallback(async () => {
         axios({
             url: SummaryApi.refresh_access.url,
             method: SummaryApi.refresh_access.method,
@@ -38,6 +38,7 @@ const useUserAccess = () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
             dispatch(setAuthorized(false));
+            await refreshAccess();
             return;
         }
 
@@ -47,12 +48,12 @@ const useUserAccess = () => {
         const now = Date.now() / 1000;
 
         if (tokenExpiration < now) {
-            await RefreshToken();
+            await refreshAccess();
         } else {
             dispatch(setRole(userRole));
             dispatch(setAuthorized(true));
         }
-    }, [RefreshToken, dispatch]);
+    }, [refreshAccess, dispatch]);
 
     return Authenticate;
 }

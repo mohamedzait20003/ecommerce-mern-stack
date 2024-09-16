@@ -27,7 +27,7 @@ const AccountsLink = ({ user }) => {
     // Google Link Functions
     const handleGoogleLink = async(e) => {
         e.preventDefault();
-        window.open(`http://localhost:8080/api/link-google?Id=${user?._id}`, '_self');
+        window.open(`http://localhost:8080/api/link-google`, '_self');
     }
     const handleGoogleUnlink = async(e) => {
         e.preventDefault();

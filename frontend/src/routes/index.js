@@ -15,6 +15,7 @@ import Forgot from '../pages/User/Forgot';
 import Signup from '../pages/User/Signup';
 import UserProfile from '../pages/User/UserProfile';
 import PassChange from '../pages/User/PassChange';
+import PicChange from '../pages/User/PicChange';
 
 // Admin Pages
 import Admin from '../pages/Admin/Admin';
@@ -72,16 +73,22 @@ const router = createBrowserRouter([
                         <UserProfile />
                     </ProtectedRoute>
                 ),
-                children: [
-                    {
-                        path: "password-change",
-                        element: (
-                            <ProtectedRoute>
-                                <PassChange />
-                            </ProtectedRoute>
-                        )
-                    }
-                ]
+            },
+            {
+                path: "picture-change",
+                element: (
+                    <ProtectedRoute>
+                        <PicChange />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "password-change",
+                element: (
+                    <ProtectedRoute>
+                        <PassChange />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "cart",

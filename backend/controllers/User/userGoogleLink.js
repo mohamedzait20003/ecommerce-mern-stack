@@ -14,7 +14,7 @@ passport.use('google-link', new GoogleStrategy({
   },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
-        const userId = req.query.state;
+        const userId = req.userId;
         const user = await userModel.findById(userId);
 
         user.SocialLink.googleId = profile.id;
@@ -29,20 +29,19 @@ passport.use('google-link', new GoogleStrategy({
 
 // Controller
 exports.linkGoogleAccount = (req, res, next) => {
-    const userId = req.query.Id;
     passport.authenticate('google-link', {
         scope: ['profile'],
-        state: userId
+        state: req.userId
     })(req, res, next);
 };
 
 exports.linkGoogleAccountCallback = (req, res, next) => {
     passport.authenticate("google-link", (err, user, info) => {
         if (err) {
-            res.cookie('status', 'failure', { httpOnly: true });
+            res.cookie('status', 'failure', { httpOnly: false });
         }
         
-        res.cookie('status', 'success', { httpOnly: true });
+        res.cookie('status', 'success', { httpOnly: false });
         res.redirect('http://localhost:3000/user-profile');
     })(req, res, next);
 };

@@ -43,7 +43,7 @@ router.post("/user-delete", authToken, userDeleteController);
 router.put("/user-password-change", authToken, userPassChangeController);
 
 // User Google OAuth Routes
-router.get('/link-google', userGoogleLinkController.linkGoogleAccount);
+router.get('/link-google', authToken, userGoogleLinkController.linkGoogleAccount);
 router.get('/link-google/callback', userGoogleLinkController.linkGoogleAccountCallback);
 router.get('/login-google', userGoogleLoginController.googleLogin);
 router.get('/login-google/callback', userGoogleLoginController.googleLoginCallback);

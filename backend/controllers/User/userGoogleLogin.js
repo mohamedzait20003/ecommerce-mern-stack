@@ -20,15 +20,10 @@ passport.use('google-login', new GoogleStrategy({
             _id: user._id,
             email: user.email,
         };
-        const AccessTokenData = {
-            key: crypto.randomBytes(64).toString('hex'),
-            role: user.Role,
-        }
 
-        const accessToken = await jwt.sign(AccessTokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
         const refreshToken = await jwt.sign(RefreshTokenData, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
         
-        done(null, { accessToken: accessToken, refreshToken: refreshToken });
+        done(null, { refreshToken: refreshToken });
     } catch (err) {
         done(err, null);
     }
@@ -39,14 +34,13 @@ exports.googleLogin = passport.authenticate('google-login', { scope: ['profile',
 
 exports.googleLoginCallback = (req, res) => {
     passport.authenticate('google-login', (err, data) => {
-        const { accessToken, refreshToken } = data;
+        const { refreshToken } = data;
 
         const tokenOption = {
             httpOnly: true,
             secure: true,
         };
 
-        res.cookie("accessToken", accessToken, tokenOption);
         res.cookie("refreshToken", refreshToken, tokenOption);
         res.redirect('http://localhost:3000');
     })(req, res);

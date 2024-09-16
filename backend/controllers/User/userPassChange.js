@@ -8,26 +8,28 @@ const bcrypt = require('bcryptjs');
 async function userPassChangeController(req, res) {
     try {
         const { Oldpass, password } = req.body;
+        console.log("Oldpass:", Oldpass);
+        console.log("password", password);
 
-        // Fetch the user by ID
-        const user = await userModel.findById(req.userId);
+        // // Fetch the user by ID
+        // const user = await userModel.findById(req.userId);
 
-        // Check if the old password is correct
-        const checkPassword = await bcrypt.compare(Oldpass, user.password);
-        if (!checkPassword) {
-            throw new Error("Old Password incorrect");
-        }
+        // // Check if the old password is correct
+        // const checkPassword = await bcrypt.compare(Oldpass, user.password);
+        // if (!checkPassword) {
+        //     throw new Error("Old Password incorrect");
+        // }
 
-        // Generate a new hashed password
-        const salt = bcrypt.genSaltSync(10);
-        const hashPassword = await bcrypt.hashSync(password, salt);
+        // // Generate a new hashed password
+        // const salt = bcrypt.genSaltSync(10);
+        // const hashPassword = await bcrypt.hashSync(password, salt);
 
-        // Update the user's password
-        const updateUser = await userModel.findByIdAndUpdate(
-            req.userId,
-            { password: hashPassword },
-            { new: true }
-        );
+        // // Update the user's password
+        // const updateUser = await userModel.findByIdAndUpdate(
+        //     req.userId,
+        //     { password: hashPassword },
+        //     { new: true }
+        // );
 
         res.status(200).json({
             message: "Password changed Successfully!",
