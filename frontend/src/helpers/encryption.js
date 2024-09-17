@@ -1,13 +1,5 @@
 // Public Key
-const publicKeyPEM = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoIEFZF1k0TeU9vPjyP8I
-5k0AzlnwQYyW7kW+hci8T12aXJZb+QvZPZVMR1SGYbQOCG/zz/O9/hCND11ZJBw/
-6kmEloYo4TANe5LR0pAoRBY2Y27ZGAogw+3sakSo4SOxnqsdvfkZLE7XQLYCGqMR
-P/7wt87i9A+Z3K8+7rQ/BN3n6X0MNp7D3+P6tmhEmo6nET0cV5FeerbAl41XMYKZ
-1GoeVE/oMzkbsQaxXvBK2IswmqlIk8f9BAjsLE6WWK3gsXJFPsVRDivAVIdLK9R9
-Mw+Tfw8N/OtzkILYn7c/b+eCM0AlYlKz7cqu/ipwi7pe47Psg2ZCpXKqXEZcoycM
-lwIDAQAB
------END PUBLIC KEY-----`;
+const publicKeyPEM = process.env.REACT_APP_ENCRYPTION_KEY;
 
 // Convert PEM to ArrayBuffer
 const pemToArrayBuffer = (pem) => {
@@ -24,9 +16,7 @@ const pemToArrayBuffer = (pem) => {
 // Encrypt Function
 const encryption = async (data) => {
     try {
-        console.log('Public key:', publicKeyPEM);
-
-        // Import the public key
+        // Import the Public Key
         const publicKey = await window.crypto.subtle.importKey(
             'spki',
             pemToArrayBuffer(publicKeyPEM),
@@ -38,8 +28,6 @@ const encryption = async (data) => {
             ['encrypt']
         );
 
-        console.log('Public key imported:', publicKey);
-
         // Encrypt the data using RSA
         const encrypted = await window.crypto.subtle.encrypt(
             {
@@ -50,7 +38,6 @@ const encryption = async (data) => {
         );
 
         const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
-        console.log('Encrypted data:', encryptedBase64);
 
         // Return the encrypted data
         return encryptedBase64;
@@ -60,5 +47,5 @@ const encryption = async (data) => {
     }
 };
 
-// Export the function
+
 export default encryption;

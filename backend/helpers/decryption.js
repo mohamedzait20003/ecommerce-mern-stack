@@ -12,14 +12,12 @@ function decryptData(encryptedData) {
             throw new Error('Private key is not defined');
         }
 
-        console.log('Private key:', privateKey);
-
         // Decrypt the data using RSA
         const decrypted = crypto.privateDecrypt(
             {
                 key: privateKey,
-                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, // Updated padding scheme
-                oaepHash: "sha256", // Specify the hash function
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: "sha256",
             },
             Buffer.from(encryptedData, 'base64')
         );
