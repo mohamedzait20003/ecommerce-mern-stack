@@ -4,12 +4,21 @@ const userModel = require("../../models/userModel");
 // Library Import
 const bcrypt = require('bcryptjs');
 
+// Helper Function
+const decryption = require('../../helpers/decryption');
+
 // Controller
 async function userPassChangeController(req, res) {
     try {
         const { Oldpass, password } = req.body;
-        console.log("Oldpass:", Oldpass);
-        console.log("password", password);
+
+        // Decrypt the Old Password
+        const oldPassword = decryption(Oldpass);
+        console.log("oldPassword:", oldPassword);
+
+        // Decrypt the New Password
+        const newPassword = decryption(password);
+        console.log("newPassword:", newPassword);
 
         // // Fetch the user by ID
         // const user = await userModel.findById(req.userId);

@@ -15,11 +15,12 @@ import Footer from './components/User/Footer';
 import Context from './context/index';
 
 function App() {
-  const { fetchUserDetails } = useContext(Context);
+  const { userRole, fetchUserDetails } = useContext(Context);
 
   useEffect(() => {
+    userRole();
     fetchUserDetails();
-  }, [fetchUserDetails]);
+  }, [userRole, fetchUserDetails]);
   
   return (
     <>

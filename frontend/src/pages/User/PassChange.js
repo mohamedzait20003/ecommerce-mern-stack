@@ -75,13 +75,14 @@ const PassChange = () => {
   // Submit Handler
   const handlePasswordChange = async(e) => {
       e.preventDefault();
-
+      const encryptedOldPassword = await encryption(Pass.oldPassword);
+      const encryptedNewPassword = await encryption(Pass.newPassword);
       axios({
           url: SummaryApi.ChangePassword.url,
           method: SummaryApi.ChangePassword.method,
           data: JSON.stringify({
-              Oldpass: encryption(Pass.oldPassword),
-              password: encryption(Pass.newPassword)
+              Oldpass: encryptedOldPassword,
+              password: encryptedNewPassword
           }),
           headers: {
               'Content-Type': 'application/json'

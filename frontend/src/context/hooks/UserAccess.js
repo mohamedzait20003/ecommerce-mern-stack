@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 
 // Redux Actions
-import { setAuthorized, setRole } from '../../stores/slices/authSlice';
+import { setAuthorized } from '../../stores/slices/authSlice';
 
 // Common
 import SummaryApi from '../../common/index';
@@ -29,12 +29,12 @@ const useUserAccess = () => {
                 dispatch(setAuthorized(false));
             }
         }).catch(error => {
-            console.error("Error refreshing token:", error);
+            throw error;
         });
     }, [dispatch]);
 
     // Authenticated function  
-    const Authenticate = useCallback(async () => {
+    const setAuthorize = useCallback(async () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
             dispatch(setAuthorized(false));
@@ -44,18 +44,16 @@ const useUserAccess = () => {
 
         const decoded = jwtDecode(accessToken);
         const tokenExpiration = decoded.exp;
-        const userRole = decoded.role;
         const now = Date.now() / 1000;
 
         if (tokenExpiration < now) {
             await refreshAccess();
         } else {
-            dispatch(setRole(userRole));
             dispatch(setAuthorized(true));
         }
     }, [refreshAccess, dispatch]);
 
-    return Authenticate;
+    return setAuthorize;
 }
 
 export default useUserAccess;
