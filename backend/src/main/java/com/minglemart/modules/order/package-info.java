@@ -1,6 +1,6 @@
 @org.springframework.modulith.ApplicationModule(
     id = "order",
     displayName = "Order",
-    allowedDependencies = "shared"
+    allowedDependencies = "shared :: *"
 )
 package com.minglemart.modules.order;

@@ -6,7 +6,7 @@ import { RoutePolicy } from '../../lib/auth/policy';
 import { guarded } from '../../lib/middlewares/middleware';
 
 // Module Layout
-import Layout from './Layout';
+import Layout from './layout';
 
 // Common Components
 import Wrapper from '@/common/components/main/wrapper';
@@ -16,16 +16,11 @@ const Cart = lazy(() => import('./pages/cart'));
 const CShop = lazy(() => import('./pages/shop'));
 const CDeals = lazy(() => import('./pages/deals'));
 const Orders = lazy(() => import('./pages/orders'));
+const Dashboard = lazy(() => import('./pages/dashboard'));
 
-/**
- * Everything a signed-in customer sees, under their own id.
- *
- * `owner` makes the guard check the id in the URL against the session, so
- * `/user/someone-else/orders` never renders.
- */
 const CustomerRoutes: RouteObject = {
     path: 'user/:publicUserId',
-    ...guarded(RoutePolicy.protected(['Customer'], { owner: true })),
+    ...guarded(RoutePolicy.protected(['CUSTOMER'], { owner: true })),
     element: (
         <Wrapper islazy={true}>
             <Layout />
@@ -36,7 +31,7 @@ const CustomerRoutes: RouteObject = {
             index: true,
             element: (
                 <Wrapper islazy={true}>
-                    <CShop />
+                    <Dashboard />
                 </Wrapper>
             )
         },

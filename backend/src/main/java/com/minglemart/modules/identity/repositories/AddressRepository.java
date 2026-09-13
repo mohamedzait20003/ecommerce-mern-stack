@@ -13,7 +13,6 @@ public interface AddressRepository extends BaseRepository<AddressModel> {
 
     Optional<AddressModel> findByIdAndUserIdAndDeletedAtIsNull(UUID id, UUID userId);
 
-    Optional<AddressModel> findByUserIdAndDefaultShippingTrueAndDeletedAtIsNull(UUID userId);
+    Optional<AddressModel> findByUserIdAndIsDefaultTrueAndDeletedAtIsNull(UUID userId);
 
-    Optional<AddressModel> findByUserIdAndDefaultBillingTrueAndDeletedAtIsNull(UUID userId);
 }

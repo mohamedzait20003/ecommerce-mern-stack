@@ -1,8 +1,8 @@
 import { Provider } from 'react-redux';
+import { persistStore } from 'redux-persist';
 import { hydrateRoot } from 'react-dom/client';
 import { StrictMode, startTransition } from 'react';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { persistStore } from 'redux-persist';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { RouterProvider, createBrowserRouter, type HydrationState } from 'react-router-dom';
 

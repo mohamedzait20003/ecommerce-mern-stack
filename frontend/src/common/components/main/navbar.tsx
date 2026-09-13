@@ -3,6 +3,12 @@ import { Link, NavLink } from "react-router-dom"
 import { Menu } from "@base-ui/react/menu"
 import { MenuIcon, XIcon } from "lucide-react"
 
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "../ui/tooltip"
+
 import Logo from "./logo"
 import { cn } from "@/lib/utils/utils"
 import { ThemeToggle } from "../ui/theme-toggle"
@@ -25,6 +31,12 @@ export interface ButtonsProps {
     variant?: "primary" | "ghost"
     disabled?: boolean
     badge?: number
+    /**
+     * Show the glyph alone. For a shell whose actions are the same four every
+     * time — a customer's — the words are read once and never again, and four
+     * of them crowd out the navigation they sit beside.
+     */
+    iconOnly?: boolean
 }
 
 const linkClasses = cn(
@@ -37,9 +49,10 @@ const linkClasses = cn(
     "motion-safe:after:transition-opacity motion-safe:after:duration-200"
 )
 
-function actionClasses(variant: ButtonsProps["variant"]) {
+function actionClasses(variant: ButtonsProps["variant"], iconOnly?: boolean) {
     return cn(
-        "inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold whitespace-nowrap",
+        "relative inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold whitespace-nowrap",
+        iconOnly ? "w-11" : "px-4",
         "transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
         "disabled:pointer-events-none disabled:opacity-50",
         variant === "primary"
@@ -48,9 +61,14 @@ function actionClasses(variant: ButtonsProps["variant"]) {
     )
 }
 
-function ActionBadge({ count }: Readonly<{ count: number }>) {
+function ActionBadge({ count, corner }: Readonly<{ count: number; corner?: boolean }>) {
     return (
-        <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sale px-1.5 text-xs font-bold tabular-nums text-sale-foreground">
+        <span
+            className={cn(
+                "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sale px-1.5 text-xs font-bold tabular-nums text-sale-foreground",
+                corner ? "absolute -top-1 -right-1" : "ml-0.5"
+            )}
+        >
             {count > 99 ? "99+" : count}
         </span>
     )
@@ -65,24 +83,46 @@ const NavAction: FC<ButtonsProps & { className?: string }> = ({
     disabled,
     badge,
     className,
+    iconOnly,
 }) => {
+    // `aria-label` carries the name once the word is gone, so the control is
+    // still announced properly; the tooltip is the sighted equivalent.
     const content = (
         <>
             <Icon className="size-5 shrink-0" aria-hidden="true" />
-            <span>{label}</span>
-            {badge !== undefined && badge > 0 && <ActionBadge count={badge} />}
+            {!iconOnly && <span>{label}</span>}
+            {badge !== undefined && badge > 0 && (
+                <ActionBadge count={badge} corner={iconOnly} />
+            )}
         </>
     )
-    const classes = cn(actionClasses(variant), className)
+    const classes = cn(actionClasses(variant, iconOnly), className)
 
-    return to ? (
-        <Link to={to} className={classes}>
+    const control = to ? (
+        <Link to={to} aria-label={label} className={classes}>
             {content}
         </Link>
     ) : (
-        <button type="button" onClick={onClick} disabled={disabled} className={classes}>
+        <button
+            type="button"
+            aria-label={label}
+            onClick={onClick}
+            disabled={disabled}
+            className={classes}
+        >
             {content}
         </button>
+    )
+
+    if (!iconOnly) {
+        return control
+    }
+
+    return (
+        <Tooltip>
+            <TooltipTrigger render={control} />
+            <TooltipContent side="bottom">{label}</TooltipContent>
+        </Tooltip>
     )
 }
 
@@ -169,7 +209,6 @@ export const Navbar: FC<{
     MainLinks?: MainLinkProps[]
     Buttons?: ButtonsProps[]
     isAuthenticated?: boolean
-    /** Where the logo links. Signed-in shells pass their own prefixed home. */
     homeTo?: string
 }> = ({ MainLinks = [], Buttons = [], isAuthenticated, homeTo }) => {
     const hasMenu = MainLinks.length > 0 || Buttons.length > 0
@@ -185,7 +224,7 @@ export const Navbar: FC<{
             <nav
                 aria-label="Main"
                 className={cn(
-                    "mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8",
+                    "flex h-16 w-full items-center gap-3 pl-4 sm:pl-6 lg:pl-8",
                     "lg:grid lg:grid-cols-[1fr_auto_1fr]"
                 )}
             >

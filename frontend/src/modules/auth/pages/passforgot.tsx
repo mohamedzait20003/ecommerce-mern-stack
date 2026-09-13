@@ -14,7 +14,7 @@ import { AuthSecondaryLink, AuthSwitch } from '../components/auth-links';
 import { AuthOutcome } from '../components/auth-outcome';
 import { AuthShell } from '../components/auth-shell';
 import { SubmitButton } from '../components/submit-button';
-import { TextField } from '../components/text-field';
+import { TextField } from '@/common/components/form/text-field';
 
 interface ForgotPasswordFormData {
     email: string;

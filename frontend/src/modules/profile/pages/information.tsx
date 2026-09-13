@@ -1,22 +1,25 @@
 import { type FC } from 'react';
 
-import ProfilePicture from '../components/ProfilePicture';
-import PersonalInformation from '../components/PersonalInformation';
-import AccountInformation from '../components/AccountInformation';
-import Preferences from '../components/Preferences';
+import {
+    AccountInformationSection,
+    PersonalInformationSection,
+    PreferencesSection,
+    ProfilePictureSection,
+} from '../components/identity-sections';
+import { IDENTITY_SECTIONS } from '../components/section-index';
+import { SettingsPage } from '../components/settings-page';
 
-const Information: FC = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Information</h1>
-            <div className="space-y-8">
-                <ProfilePicture />
-                <PersonalInformation />
-                <AccountInformation />
-                <Preferences />
-            </div>
-        </div>
-    );
-};
+const Information: FC = () => (
+    <SettingsPage
+        title="Your details"
+        description="Who you are on MingleMart, and how we address you. Everything here is visible only to you, apart from your username."
+        sections={IDENTITY_SECTIONS}
+    >
+        <ProfilePictureSection />
+        <PersonalInformationSection />
+        <AccountInformationSection />
+        <PreferencesSection />
+    </SettingsPage>
+);
 
 export default Information;

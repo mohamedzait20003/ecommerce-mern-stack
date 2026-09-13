@@ -1,6 +1,6 @@
 @org.springframework.modulith.ApplicationModule(
     id = "inventory",
     displayName = "Inventory",
-    allowedDependencies = "shared"
+    allowedDependencies = "shared :: *"
 )
 package com.minglemart.modules.inventory;

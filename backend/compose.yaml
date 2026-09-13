@@ -1,72 +1,104 @@
+# =============================================================================
+# MingleMart backend — one image, three roles.
+#
+# Nothing stateful runs here. Postgres, Redis and RabbitMQ are managed services
+# reached over TLS, so every container in this file is stateless and any of
+# them can run on any machine. Which ones run where is a matter of which
+# service names you pass to `docker compose up`:
+#
+#   everything, one box:    docker compose up -d
+#   machine A, public:      docker compose up -d app
+#   machine B, private:     docker compose up -d worker scheduler
+#
+# Same image everywhere. Build it once and push it; the boxes pull:
+#
+#   docker build -t ghcr.io/<you>/minglemart-backend:$(git rev-parse --short HEAD) .
+#   docker push  ghcr.io/<you>/minglemart-backend:$(git rev-parse --short HEAD)
+#   IMAGE=ghcr.io/<you>/minglemart-backend TAG=<sha> docker compose pull && docker compose up -d
+#
+# Every connection string and secret comes from .env — see .env.example. The
+# only thing the three services differ in is two flags.
+# =============================================================================
+
+x-backend: &backend
+  build:
+    context: .
+  image: '${IMAGE:-minglemart-backend}:${TAG:-local}'
+  env_file:
+    - path: .env
+      required: true
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: '20m'
+      max-file: '5'
+
+x-backend-env: &backend-env
+  # Let the JVM size its heap from the container limit rather than the host.
+  JAVA_TOOL_OPTIONS: '-XX:MaxRAMPercentage=75'
+
 services:
-  # Behind a profile on purpose: Spring's Docker Compose Support reads this file
-  # when the app runs on your host and starts every service it finds, so an
-  # unguarded app service would boot a second copy of itself in a container.
-  #
-  #   docker compose --profile full up --build   whole stack in containers
-  #   ./mvnw spring-boot:run                     app on the host, deps in Docker
+  # --------------------------------------------------------------------------
+  # The web tier. Scales with traffic — run as many as you like behind a load
+  # balancer. Runs neither the clock nor the queues: the only time it talks to
+  # Stripe is at checkout, with the shopper present.
+  # --------------------------------------------------------------------------
   app:
-    profiles: ['full']
-    build:
-      context: .
+    <<: *backend
     container_name: 'minglemart-app'
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/minglemart'
-      - 'SPRING_DATASOURCE_USERNAME=minglemart'
-      - 'SPRING_DATASOURCE_PASSWORD=secret'
-      - 'REDIS_HOST=redis'
-      - 'REDIS_PORT=6379'
-      - 'HTTP_LOG_REQUESTS=true'
-      - 'MINGLEMART_TOKEN_SECRET=${MINGLEMART_TOKEN_SECRET:-dev-only-secret-change-me-min-32-bytes!!}'
-      - 'GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}'
-      - 'FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}'
+      <<: *backend-env
+      SCHEDULER_ENABLED: 'false'
+      JOBS_ENABLED: 'false'
     ports:
-      - '8080:8080'
+      # Loopback only. A reverse proxy on the same machine terminates TLS and
+      # forwards here; nothing on the internet reaches 8080 directly. Give the
+      # proxy an idle timeout above 15 minutes, or it will cut every SSE stream
+      # short before the browser's own reconnect kicks in.
+      - '127.0.0.1:8080:8080'
+    mem_limit: 768m
 
-  postgres:
-    image: 'postgres:18-alpine'
-    container_name: 'minglemart-postgres'
+  # --------------------------------------------------------------------------
+  # The queue consumers. Scale with queue depth — any number may run at once,
+  # and competing consumers on a durable queue is the whole point of a queue.
+  #
+  # No port at all, which is a real security property: the container that
+  # holds the Stripe secret and captures payments never faces the internet.
+  # --------------------------------------------------------------------------
+  worker:
+    <<: *backend
+    container_name: 'minglemart-worker'
     environment:
-      - 'POSTGRES_DB=minglemart'
-      - 'POSTGRES_USER=minglemart'
-      - 'POSTGRES_PASSWORD=secret'
-    ports:
-      # 5433 on the host, not 5432: a native postgresql-x64-18 service already
-      # holds 5432 on this machine. Both can bind — Docker takes the IPv6
-      # wildcard and the service the IPv4 one — so an app on the host resolves
-      # localhost to IPv4 and silently reaches the wrong database. Spring's
-      # Compose Support reads whichever port Docker mapped, so nothing else
-      # needs to change. The container still serves 5432 inside the network.
-      - '5433:5432'
-    volumes:
-      - 'postgres-data:/var/lib/postgresql'
+      <<: *backend-env
+      SCHEDULER_ENABLED: 'false'
+      JOBS_ENABLED: 'true'
+      SPRING_MAIN_WEB_APPLICATION_TYPE: 'none'
+    mem_limit: 512m
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U minglemart -d minglemart']
-      interval: 5s
+      test: ['CMD-SHELL', 'pgrep -x java > /dev/null || exit 1']
+      interval: 30s
       timeout: 3s
-      retries: 10
-      start_period: 10s
+      retries: 3
+      start_period: 45s
 
-  redis:
-    image: 'redis:8-alpine'
-    container_name: 'minglemart-redis'
-    command: ['redis-server', '--appendonly', 'yes']
-    ports:
-      - '6379:6379'
-    volumes:
-      - 'redis-data:/data'
+  # --------------------------------------------------------------------------
+  # The clock. Exactly one, ever. Sweeps, drains and alarms — and the only
+  # instance that replays incomplete event publications on restart. Two of
+  # these would time out the same proposal twice and raise every alarm twice.
+  # --------------------------------------------------------------------------
+  scheduler:
+    <<: *backend
+    container_name: 'minglemart-scheduler'
+    environment:
+      <<: *backend-env
+      SCHEDULER_ENABLED: 'true'
+      JOBS_ENABLED: 'false'
+      SPRING_MAIN_WEB_APPLICATION_TYPE: 'none'
+    mem_limit: 384m
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 5s
+      test: ['CMD-SHELL', 'pgrep -x java > /dev/null || exit 1']
+      interval: 30s
       timeout: 3s
-      retries: 10
-      start_period: 5s
-
-volumes:
-  postgres-data:
-  redis-data:
+      retries: 3
+      start_period: 45s

@@ -488,3 +488,119 @@
   60% { transform: translate3d(3px, 0, 0); }
   80% { transform: translate3d(-2px, 0, 0); }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion for the signed-in shell.
+
+   Same contract throughout: the resting state is the finished state, the
+   animation lives inside the reduced-motion guard, and only transform, opacity
+   and stroke-dashoffset move — never a box that other boxes have to reflow
+   around.
+--------------------------------------------------------------------------- */
+
+[data-ring-track],
+[data-ring-value] {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+[data-ring-value] {
+  stroke-dasharray: var(--ring-length, 100);
+  stroke-dashoffset: var(--ring-offset, 0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-ring-value] {
+    transition: stroke-dashoffset 700ms var(--ease-out-soft);
+  }
+
+  /* A value that just changed. Scale only, so neighbours never move. */
+  [data-pop] {
+    animation: value-pop 340ms var(--ease-out-soft);
+  }
+
+  /* Rows that arrive after their container, e.g. a filtered order list. */
+  [data-rise] {
+    animation: rise-in 380ms var(--ease-out-soft) both;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+}
+
+@keyframes value-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion for the account settings shell.
+--------------------------------------------------------------------------- */
+
+/* Height that animates without animating height.
+   `grid-template-rows: 0fr -> 1fr` is interpolatable where `height: auto` is
+   not, so a panel can grow to whatever its content needs without anyone
+   measuring it first. The inner element owns the clipping. */
+[data-collapse] {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+
+[data-collapse][data-open] {
+  grid-template-rows: 1fr;
+}
+
+[data-collapse] > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-collapse] {
+    transition: grid-template-rows 320ms var(--ease-out-soft);
+  }
+
+  [data-collapse] > * {
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out-soft);
+  }
+
+  [data-collapse][data-open] > * {
+    opacity: 1;
+    transition: opacity 260ms var(--ease-out-soft) 80ms;
+  }
+}
+
+/* Jumped-to section. `:target` means the browser tells us which one, so no
+   click handler has to remember. Ring only — nothing moves. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-highlight]:target {
+    animation: section-flash 1400ms var(--ease-out-soft);
+  }
+}
+
+@keyframes section-flash {
+  0%,
+  55% {
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 65%);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}

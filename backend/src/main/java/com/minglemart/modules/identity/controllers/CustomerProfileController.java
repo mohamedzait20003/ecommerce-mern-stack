@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,7 @@ import com.minglemart.modules.identity.models.UserModel;
 import com.minglemart.modules.identity.services.CustomerProfileService;
 import com.minglemart.modules.identity.services.UserService;
 import com.minglemart.shared.common.ApiResponse;
-import com.minglemart.shared.contracts.AccessTokenVerifier;
+import com.minglemart.shared.domain.AuthUser;
 import com.minglemart.shared.domain.BaseController;
 
 /**
@@ -43,9 +42,9 @@ public class CustomerProfileController extends BaseController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<CustomerProfileResponse>> mine(
-            @AuthenticationPrincipal AccessTokenVerifier.Principal caller) {
+            @AuthUser UUID userId) {
 
-        UserModel user = users.getOrThrow(requireCaller(caller));
+        UserModel user = users.getOrThrow(userId);
 
         return ok("Profile loaded.", CustomerProfileResponse.from(profiles.forUser(user)));
     }
@@ -53,10 +52,10 @@ public class CustomerProfileController extends BaseController {
     /** PATCH, not PUT: a null field means "leave it alone". */
     @PatchMapping
     public ResponseEntity<ApiResponse<CustomerProfileResponse>> update(
-            @AuthenticationPrincipal AccessTokenVerifier.Principal caller,
+            @AuthUser UUID userId,
             @Valid @RequestBody CustomerProfileRequest request) {
 
-        UserModel user = users.getOrThrow(requireCaller(caller));
+        UserModel user = users.getOrThrow(userId);
 
         var updated = profiles.updateFor(user, profile -> {
             if (request.isActivityTracked() != null)  profile.setActivityTracked(request.isActivityTracked());
@@ -70,10 +69,4 @@ public class CustomerProfileController extends BaseController {
         return ok("Preferences updated.", CustomerProfileResponse.from(updated));
     }
 
-    private UUID requireCaller(AccessTokenVerifier.Principal caller) {
-        if (caller == null) {
-            throw new IllegalStateException("no authenticated caller");
-        }
-        return caller.userId();
-    }
 }

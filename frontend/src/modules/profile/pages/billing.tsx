@@ -1,15 +1,21 @@
 import { type FC } from 'react';
 
-const Billing: FC = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Billing Settings</h1>
-            <div className="space-y-4">
-                <p className="text-gray-600">Manage your payment methods and billing information.</p>
-                {/* Add payment methods form here */}
-            </div>
-        </div>
-    );
-};
+import {
+    InvoicesSection,
+    PaymentMethodsSection,
+} from '../components/commerce-sections';
+import { BILLING_SECTIONS } from '../components/section-index';
+import { SettingsPage } from '../components/settings-page';
+
+const Billing: FC = () => (
+    <SettingsPage
+        title="Payment"
+        description="How you pay, and where your receipts go. Card details are held by our payment processor and never touch our servers."
+        sections={BILLING_SECTIONS}
+    >
+        <PaymentMethodsSection />
+        <InvoicesSection />
+    </SettingsPage>
+);
 
 export default Billing;

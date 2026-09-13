@@ -315,6 +315,50 @@ public class AuthService extends BaseIntegrationService {
         return users.getOrThrow(userId);
     }
 
+    /**
+     * Changes the password of a signed-in user.
+     *
+     * <p>Separate from {@link #resetPassword} because the proof is different: a
+     * reset is authorised by an emailed single-use token, this one by knowing
+     * the current password. Requiring it is what stops a borrowed session from
+     * locking the owner out.
+     *
+     * <p>Every OTHER session is revoked, not every session. The caller has just
+     * demonstrated they know the password, so signing them out of the tab they
+     * are looking at would punish the wrong person - while a session an attacker
+     * holds still dies here.
+     *
+     * @param currentSessionId the session to keep; null revokes all of them
+     */
+    @Transactional
+    public UserModel changePassword(UUID userId, UUID currentSessionId,
+                                    String currentPassword, String newPassword) {
+
+        UserModel user = users.getOrThrow(userId);
+
+        // An account created through Google has no password to verify against.
+        if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+            throw AuthException.passwordNotSet();
+        }
+
+        if (!passwords.matches(currentPassword, user.getPasswordHash())) {
+            throw AuthException.invalidCredentials();
+        }
+
+        users.update(userId, found -> found.setPasswordHash(passwords.encode(newPassword)));
+
+        if (currentSessionId == null) {
+            sessions.revokeAll(userId);
+        } else {
+            sessions.revokeOthers(userId, currentSessionId);
+        }
+
+        UserModel updated = users.getOrThrow(userId);
+        authMail.passwordChanged(userId, updated.getEmail(), updated.getFname());
+
+        return updated;
+    }
+
     // ----------------------------------------------------- email verify -----
 
     @Transactional

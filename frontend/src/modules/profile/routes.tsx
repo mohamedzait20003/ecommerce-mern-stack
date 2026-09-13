@@ -20,7 +20,7 @@ const Information = lazy(() => import('./pages/information'));
 
 const ProfileRoutes: RouteObject = {
     path: 'profile',
-    ...guarded(RoutePolicy.protected(['Customer', 'Admin', 'Moderator'])),
+    ...guarded(RoutePolicy.protected(['CUSTOMER', 'ADMIN'])),
     element: (
         <Wrapper islazy={true}>
             <Layout />

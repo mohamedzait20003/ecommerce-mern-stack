@@ -25,6 +25,8 @@ import lombok.experimental.SuperBuilder;
 
 import com.minglemart.shared.domain.BaseModel;
 import com.minglemart.shared.enums.ProductStatus;
+import com.minglemart.shared.enums.StorageType;
+import java.math.BigDecimal;
 
 /**
  * The thing a shopper talks about ("the blue running shoe"). It is never priced
@@ -58,6 +60,41 @@ public class ProductModel extends BaseModel {
 
     /** Targetable by an offer scoped to a brand, so it is indexed. */
     private String brand;
+
+    /**
+     * A percentage of the line, held per product because a grocery basket mixes
+     * rates: fresh food is commonly zero-rated where household goods are not.
+     * Orders snapshot the rate they were placed under, so editing this never
+     * rewrites what an old order was charged.
+     */
+    @Builder.Default
+    @Column(name = "tax_rate", nullable = false, precision = 5, scale = 2)
+    private BigDecimal taxRate = BigDecimal.ZERO;
+
+    /**
+     * How the product is held, and so what becomes of it when a picked order is
+     * abandoned. See {@link StorageType#restockable()} — ambient stock goes back
+     * on the shelf, anything chilled or frozen has been out of temperature
+     * control by then and is written off.
+     */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "storage_type", nullable = false, length = 16)
+    private StorageType storageType = StorageType.AMBIENT;
+
+    /**
+     * Beer, wine, tobacco. A catalogue fact that the DELIVERY has to act on: the
+     * driver checks ID at the door, and by then the basket is a sealed bag they
+     * cannot inspect, so the answer travels with the delivery rather than being
+     * looked up from it.
+     */
+    @Builder.Default
+    @Column(name = "is_age_restricted", nullable = false)
+    private boolean ageRestricted = false;
+
+    /** Set exactly when {@link #ageRestricted} is; the schema insists on both or neither. */
+    @Column(name = "min_age")
+    private Short minAge;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

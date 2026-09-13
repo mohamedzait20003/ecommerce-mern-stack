@@ -20,7 +20,7 @@ const Dashboard = lazy(() => import('./pages/dashboard'));
 /** The admin console, under the signed-in admin's own id. */
 const AdminRoutes: RouteObject = {
     path: 'admin/:publicUserId',
-    ...guarded(RoutePolicy.protected(['Admin'], { owner: true })),
+    ...guarded(RoutePolicy.protected(['ADMIN'], { owner: true })),
     element: (
         <Wrapper islazy={true}>
             <Layout />

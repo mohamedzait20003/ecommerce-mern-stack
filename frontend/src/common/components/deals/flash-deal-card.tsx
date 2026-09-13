@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom"
-import { ArrowRightIcon, StarIcon } from "lucide-react"
+import { StarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils/utils"
 import { Badge } from "@/common/components/ui/badge"
 import { Card, CardContent } from "@/common/components/ui/card"
+import { AddToCart } from "@/common/components/catalog/add-to-cart"
+import { ProductLink } from "@/common/components/catalog/product-link"
 import { Shine } from "@/common/components/animation/shine"
 import { Tilt } from "@/common/components/animation/tilt"
 import { formatMoney, hasDiscount, type DealItem } from "@/lib/models/catalogModels"
@@ -89,12 +90,12 @@ export function FlashDealCard({ deal, to }: Readonly<{ deal: DealItem; to: strin
                     )}
 
                     <h3 className="font-semibold text-pretty">
-                        <Link
+                        <ProductLink
                             to={to}
                             className="rounded-sm outline-none after:absolute after:inset-0 after:z-2 focus-visible:ring-3 focus-visible:ring-ring/40"
                         >
                             {name}
-                        </Link>
+                        </ProductLink>
                     </h3>
 
                     <p className="flex items-baseline gap-2">
@@ -114,13 +115,12 @@ export function FlashDealCard({ deal, to }: Readonly<{ deal: DealItem; to: strin
                         <DealMeter claimed={percentClaimed} left={unitsLeft} className="mt-auto pt-1" />
                     )}
 
-                    <span
-                        aria-hidden="true"
-                        className="mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary/10 font-semibold text-primary transition-colors duration-200 group-hover/deal:bg-primary group-hover/deal:text-primary-foreground"
-                    >
-                        Grab deal
-                        <ArrowRightIcon className="size-4 transition-transform duration-200 group-hover/deal:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover/deal:translate-x-0" />
-                    </span>
+                    <AddToCart
+                        variantId={product.variantId}
+                        name={name}
+                        size="wide"
+                        className="mt-auto"
+                    />
                 </CardContent>
             </Card>
         </Tilt>

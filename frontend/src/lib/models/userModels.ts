@@ -1,4 +1,23 @@
-export type Role = string | null;
+/**
+ * The roles as the database spells them.
+ *
+ * `roles.name` is seeded uppercase in V1__user.sql, the backend puts
+ * `role.getName()` straight into the session cookie and the auth response, and
+ * Spring maps the same value to a `ROLE_` authority. So uppercase is the
+ * contract, and comparing against anything else silently matches nothing.
+ */
+export const ROLE = {
+    ADMIN: 'ADMIN',
+    CUSTOMER: 'CUSTOMER',
+} as const;
+
+/**
+ * A union rather than `string`, so a mis-spelled role is a build error instead
+ * of a comparison that is quietly always false. A new role added to the table
+ * belongs here too - and the compiler will point at every place that has to
+ * decide what it means.
+ */
+export type Role = (typeof ROLE)[keyof typeof ROLE] | null;
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY';
 
 export interface AuthenticatedUser {

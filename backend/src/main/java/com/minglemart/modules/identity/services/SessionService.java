@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.minglemart.shared.contracts.SessionRegistry;
 import com.minglemart.shared.domain.BaseDataService;
 import com.minglemart.modules.identity.common.TokenHasher;
 import com.minglemart.modules.identity.models.SessionModel;
@@ -14,7 +15,7 @@ import com.minglemart.modules.identity.repositories.SessionRepository;
 
 
 @Service
-public class SessionService extends BaseDataService<SessionModel, SessionRepository> {
+public class SessionService extends BaseDataService<SessionModel, SessionRepository> implements SessionRegistry {
 
     public SessionService(SessionRepository repository) {
         super(repository);
@@ -23,6 +24,27 @@ public class SessionService extends BaseDataService<SessionModel, SessionReposit
     @Override
     protected String entityName() {
         return "Session";
+    }
+
+    /**
+     * The session behind {@code @Authorize(session = true)}, or empty.
+     *
+     * <p>Empty covers revoked, expired and never-existed alike. The caller only
+     * needs to know the session cannot be used, and saying which would tell an
+     * attacker whether a session id was ever real.
+     */
+    @Override
+    public Optional<SessionRegistry.LiveSession> live(UUID sessionId) {
+        if (sessionId == null) {
+            return Optional.empty();
+        }
+
+        return repository.findLive(sessionId, Instant.now())
+                .map(session -> new SessionRegistry.LiveSession(
+                        session.getId(),
+                        session.getUser().getId(),
+                        session.getUser().isActive(),
+                        session.getUser().isVerified()));
     }
 
     /**
@@ -72,6 +94,29 @@ public class SessionService extends BaseDataService<SessionModel, SessionReposit
     @Transactional
     public int revokeAll(UUID userId) {
         return repository.revokeAllForUser(userId, Instant.now());
+    }
+
+    /**
+     * Sign out every device except the one asking.
+     *
+     * <p>What a password change from inside a session wants: an attacker holding
+     * a stolen session loses it, while the person who just proved they know the
+     * password is not logged out of the tab they are looking at.
+     */
+    @Transactional
+    public int revokeOthers(UUID userId, UUID keepSessionId) {
+        Instant now = Instant.now();
+        int revoked = 0;
+
+        for (SessionModel session : activeFor(userId)) {
+            if (session.getId().equals(keepSessionId)) {
+                continue;
+            }
+            session.setRevokedAt(now);
+            revoked++;
+        }
+
+        return revoked;
     }
 
     @Transactional

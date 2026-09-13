@@ -21,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.minglemart.shared.contracts.AccessTokenVerifier;
 import com.minglemart.shared.filters.AccessTokenFilter;
+import com.minglemart.shared.handlers.SecurityHandler;
 
 @Configuration
 @EnableMethodSecurity
@@ -74,8 +75,21 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/landing", "/api/deals", "/api/shop").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                // Stripe calls this, not a signed-in user. The request's own
+                // signature is the authentication, checked in the controller
+                // against the raw body; a token filter would reject every one.
+                .requestMatchers(HttpMethod.POST, "/api/webhooks/**").permitAll()
+
+                // Staff surfaces, by the role the token carries. ADMIN may do
+                // any of them — a small store's manager is all three at once.
+                .requestMatchers("/api/staff/moderator/**").hasAnyRole("MODERATOR", "ADMIN")
+                .requestMatchers("/api/staff/picker/**").hasAnyRole("PICKER", "ADMIN")
+                .requestMatchers("/api/staff/driver/**").hasAnyRole("DRIVER", "ADMIN")
+
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
+                // Everything else — checkout, orders, billing, cart — is a
+                // signed-in customer acting on their own account.
                 .anyRequest().authenticated()
             ).addFilterBefore(new AccessTokenFilter(accessTokenVerifier), UsernamePasswordAuthenticationFilter.class)
             .build();

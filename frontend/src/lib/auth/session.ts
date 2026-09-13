@@ -2,9 +2,10 @@ import { parseCookie } from 'cookie';
 
 import cookies from '@/common/data/cookies.json';
 import { navUrls, withUser } from '@/lib/utils/navUrls';
+import { ROLE, type Role } from '@/lib/models/userModels';
 
 export type Session = {
-    role: string | null;
+    role: Role;
     isVerified: boolean;
     publicUserId: string | null;
 };
@@ -47,10 +48,10 @@ export function prefixFor(session: Session | null): string | null {
         return null;
     }
 
-    if (session.role === 'Admin')
+    if (session.role === ROLE.ADMIN)
         return withUser(navUrls.admin.base, session.publicUserId);
 
-    if (session.role === 'Customer')
+    if (session.role === ROLE.CUSTOMER)
         return withUser(navUrls.customer.base, session.publicUserId);
 
     return null;

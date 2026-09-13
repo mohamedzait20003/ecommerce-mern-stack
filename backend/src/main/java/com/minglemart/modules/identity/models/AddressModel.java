@@ -46,11 +46,12 @@ public class AddressModel extends SoftDeletableModel {
 
     private String phone;
 
+    /**
+      * The one an order uses unless the shopper picks another. At most one per
+      * user, which a partial unique index enforces — so setting a new default
+      * has to clear the old one first.
+      */
     @Builder.Default
-    @Column(name = "is_default_shipping")
-    private boolean defaultShipping = false;
-
-    @Builder.Default
-    @Column(name = "is_default_billing")
-    private boolean defaultBilling  = false;
+    @Column(name = "is_default")
+    private boolean isDefault = false;
 }

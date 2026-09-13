@@ -1,3 +1,5 @@
+import type { Role } from '../models/userModels';
+
 const PublicPolicy = {
     type: 'public',
 } as const;
@@ -8,7 +10,7 @@ const GuestPolicy = {
 
 type ProtectedPolicy = {
     type: 'protected';
-    roles?: string[];
+    roles?: Role[];
     requireVerified?: boolean;
     owner?: boolean;
 };
@@ -21,7 +23,7 @@ export const RoutePolicy = {
     guest: (): RoutePolicyType => GuestPolicy,
 
     protected: (
-        roles?: string[],
+        roles?: Role[],
         opts?: { requireVerified?: boolean; owner?: boolean },
     ): ProtectedPolicy => ({
         type: 'protected',

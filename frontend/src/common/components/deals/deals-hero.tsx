@@ -10,6 +10,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/common/components/ui/breadcrumb"
+import { ProductLink } from "@/common/components/catalog/product-link"
 import { Aurora } from "@/common/components/animation/aurora"
 import { CountUp } from "@/common/components/animation/count-up"
 import { Countdown } from "@/common/components/animation/countdown"
@@ -187,7 +188,7 @@ export function DealsHero({
                             <ul className="flex flex-col gap-1">
                                 {preview.map((deal) => (
                                     <li key={deal.dealId}>
-                                        <Link
+                                        <ProductLink
                                             to={`${basePath}/shop?q=${deal.product.slug}`}
                                             className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40"
                                         >
@@ -214,7 +215,7 @@ export function DealsHero({
                                             <span className="shrink-0 rounded-full bg-sale/12 px-2 py-1 text-xs font-bold text-sale tabular-nums">
                                                 -{Math.round(deal.product.percentOff)}%
                                             </span>
-                                        </Link>
+                                        </ProductLink>
                                     </li>
                                 ))}
                             </ul>

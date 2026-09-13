@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom"
-import { ShoppingCartIcon, StarIcon } from "lucide-react"
+import { StarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils/utils"
 import { Badge } from "@/common/components/ui/badge"
 import { Card, CardContent } from "@/common/components/ui/card"
 import { formatMoney, hasDiscount, type ProductCardDto } from "@/lib/models/catalogModels"
+import { AddToCart } from "./add-to-cart"
 import { CategoryIcon } from "./category-icon"
+import { ProductLink } from "./product-link"
 import { TONE_CLASS, toneFor } from "@/lib/utils/category-visual"
 
 function Stars({ rating }: Readonly<{ rating: number }>) {
@@ -84,13 +85,15 @@ export function ProductCard({ product, to }: Readonly<{ product: ProductCardDto;
                 )}
 
                 <h3 className="font-semibold text-pretty">
-                    {/* Stretched link: the whole card is the target, but only one link exists. */}
-                    <Link
+                    {/* Stretched link: the whole card is the target, but only one
+                        link exists — and it is the gated one, so a visitor is sent
+                        to sign in rather than into a page that would bounce them. */}
+                    <ProductLink
                         to={to}
                         className="rounded-sm outline-none after:absolute after:inset-0 focus-visible:ring-3 focus-visible:ring-ring/40"
                     >
                         {name}
-                    </Link>
+                    </ProductLink>
                 </h3>
 
                 <div className="mt-auto flex items-center justify-between gap-2 pt-2">
@@ -109,12 +112,10 @@ export function ProductCard({ product, to }: Readonly<{ product: ProductCardDto;
                             </s>
                         )}
                     </p>
-                    <span
-                        aria-hidden="true"
-                        className="relative z-1 inline-flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover/product:bg-primary group-hover/product:text-primary-foreground"
-                    >
-                        <ShoppingCartIcon className="size-4" />
-                    </span>
+                    {/* A real control, not decoration: it sits above the
+                        stretched link so a click lands here rather than opening
+                        the product. */}
+                    <AddToCart variantId={product.variantId} name={name} />
                 </div>
             </CardContent>
         </Card>

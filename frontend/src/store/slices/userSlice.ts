@@ -35,9 +35,6 @@ const initialState: UserState = {
     locale: 'en',
     timeZone: 'UTC',
 
-    // Preference flags arrive from GET /api/profile, not from sign-in, so they
-    // stay undefined until that query resolves rather than pretending to
-    // defaults the server may disagree with.
     customerProfile: undefined,
 };
 
@@ -51,6 +48,7 @@ export const userStateFromSession = (session: Session | null): UserState => sess
 
 const identify = (state: UserState, user: AuthenticatedUser) => {
     state.id = user.id;
+    state.publicUserId = user.publicUserId;
     state.role = user.role;
     state.isAuthenticated = true;
     state.isVerified = user.verified;
