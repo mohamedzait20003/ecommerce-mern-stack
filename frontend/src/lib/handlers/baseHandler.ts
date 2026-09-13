@@ -70,7 +70,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const baseHandler = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User', 'Session', 'Catalog'],
+    tagTypes: ['User', 'Session', 'Catalog', 'Cart'],
     keepUnusedDataFor: 60,
     refetchOnReconnect: true,
     endpoints: () => ({}),

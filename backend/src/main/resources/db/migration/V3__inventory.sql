@@ -11,8 +11,10 @@
 CREATE TABLE inventory_items (
     variant_id         uuid PRIMARY KEY
         REFERENCES product_variants(id) ON DELETE CASCADE,   -- crosses into: catalog
-    quantity_on_hand   integer     NOT NULL DEFAULT 0 CHECK (quantity_on_hand >= 0),
-    quantity_reserved  integer     NOT NULL DEFAULT 0 CHECK (quantity_reserved >= 0),
+    -- Numeric, not integer: a shelf holds 12.400 kg of loose apples as readily
+    -- as it holds 12 tins, and a deli pick takes 0.540 of a pound off it.
+    quantity_on_hand   numeric(12,3) NOT NULL DEFAULT 0 CHECK (quantity_on_hand >= 0),
+    quantity_reserved  numeric(12,3) NOT NULL DEFAULT 0 CHECK (quantity_reserved >= 0),
     reorder_level      integer     NOT NULL DEFAULT 0 CHECK (reorder_level >= 0),
     -- allow selling into negative stock (backorder) for this variant
     allow_backorder    boolean     NOT NULL DEFAULT false,
@@ -40,7 +42,7 @@ FROM   inventory_items;
 CREATE TABLE inventory_reservations (
     id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     variant_id  uuid        NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
-    quantity    integer     NOT NULL CHECK (quantity > 0),
+    quantity    numeric(12,3) NOT NULL CHECK (quantity > 0),
     -- what the hold is for: a cart line first, an order once placed
     owner_type  varchar(16) NOT NULL CHECK (owner_type IN ('CART', 'ORDER')),
     owner_id    uuid        NOT NULL,
@@ -63,7 +65,7 @@ CREATE TABLE stock_movements (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     variant_id    uuid        NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
     -- signed: positive on restock/return, negative on fulfilment
-    quantity_delta integer    NOT NULL CHECK (quantity_delta <> 0),
+    quantity_delta numeric(12,3) NOT NULL CHECK (quantity_delta <> 0),
     reason        varchar(32) NOT NULL
         CHECK (reason IN ('RESTOCK', 'FULFILMENT', 'RETURN', 'ADJUSTMENT', 'DAMAGE')),
     reference_type varchar(16),

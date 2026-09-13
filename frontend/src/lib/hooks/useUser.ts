@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import type { CredentialResponse } from "@react-oauth/google"
 
 import { navUrls } from "@/lib/utils/navUrls"
-import { currentLanding } from "@/lib/auth/session"
+import { currentLanding, landingFor } from "@/lib/auth/session"
 import baseHandler from "@/lib/handlers/baseHandler"
 import {
     useForgotPasswordMutation,
@@ -16,9 +16,11 @@ import {
     useVerifyEmailMutation,
 } from "@/lib/handlers/userHandlers"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { cartUiReset } from "@/store/slices/cartSlice"
 import { selectUser } from "@/store/slices/userSlice"
 
 import type {
+    AuthenticatedUser,
     PassForgetRequest,
     PassResetRequest,
     SignInRequest,
@@ -26,6 +28,24 @@ import type {
 } from "@/lib/models/userModels"
 
 type OnFailure = () => void
+
+/**
+ * Where a freshly authenticated user belongs.
+ *
+ * Read off the response rather than by navigating to the root and letting the
+ * guest guard bounce: route middleware only runs when `future.v8_middleware`
+ * is set on the router, and it is not, so nothing bounces and everyone landed
+ * on the visitor home page instead of their own section.
+ *
+ * Reuses `landingFor` so this agrees with the guard and the navbar about the
+ * answer, including sending an unverified account to the verification notice.
+ */
+const landingForUser = (user: AuthenticatedUser): string =>
+    landingFor({
+        role: user.role,
+        isVerified: user.verified,
+        publicUserId: user.publicUserId,
+    })
 
 
 export function useUser() {
@@ -45,6 +65,7 @@ export function useUser() {
         }
 
         dispatch(baseHandler.util.resetApiState())
+        dispatch(cartUiReset())
         toast.success("Logged out successfully")
         navigate(navUrls.landing.home)
     }, [signOut, dispatch, navigate])
@@ -65,8 +86,10 @@ export function useLogin(onFailure?: OnFailure) {
 
     const login = useCallback(
         async (credentials: SignInRequest) => {
+            let user: AuthenticatedUser
+
             try {
-                await signIn(credentials).unwrap()
+                user = await signIn(credentials).unwrap()
             } catch (err) {
                 console.error("Login failed:", err)
                 toast.error("That did not work. Check your email and password.")
@@ -75,7 +98,7 @@ export function useLogin(onFailure?: OnFailure) {
             }
 
             toast.success("Welcome back.")
-            navigate(navUrls.landing.home)
+            navigate(landingForUser(user))
             return true
         },
         [signIn, navigate, onFailure],
@@ -123,8 +146,10 @@ export function useGoogleAuth(onFailure?: OnFailure) {
                 return false
             }
 
+            let user: AuthenticatedUser
+
             try {
-                await googleSignIn({ idToken }).unwrap()
+                user = await googleSignIn({ idToken }).unwrap()
             } catch (err) {
                 console.error("Google login failed:", err)
                 toast.error("Google sign-in failed. Please try again.")
@@ -133,7 +158,7 @@ export function useGoogleAuth(onFailure?: OnFailure) {
             }
 
             toast.success("Signed in with Google.")
-            navigate(navUrls.landing.home)
+            navigate(landingForUser(user))
             return true
         },
         [googleSignIn, navigate, onFailure],

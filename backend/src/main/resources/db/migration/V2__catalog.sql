@@ -45,9 +45,36 @@ CREATE TABLE products (
     description  text,
     brand        text,
     status       varchar(16)  NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'ACTIVE', 'ARCHIVED')),
+
+    -- Tax is a percentage of the line and is set per product, because a basket
+    -- mixes rates: fresh food is commonly zero-rated where household goods are
+    -- not. Orders snapshot the rate they were placed under, so changing it here
+    -- never rewrites what an old order was charged.
+    tax_rate     numeric(5,2) NOT NULL DEFAULT 0
+        CHECK (tax_rate >= 0 AND tax_rate <= 100),
+
+    -- How the product is held, which decides what happens to it when a picked
+    -- order is abandoned. Ambient goods go back on the shelf as a RESTOCK
+    -- movement; anything chilled or frozen has been out of temperature control
+    -- by then and is written off as DAMAGE instead. Defaulting to AMBIENT keeps
+    -- the safe-to-restock case free and makes the exception explicit.
+    storage_type varchar(16)  NOT NULL DEFAULT 'AMBIENT'
+        CHECK (storage_type IN ('AMBIENT', 'CHILLED', 'FROZEN')),
+
+    -- Beer, wine, spirits, tobacco. The flag is a catalogue fact, but it is the
+    -- delivery that has to act on it: the driver checks ID at the door, and by
+    -- then the basket is a sealed bag they cannot inspect. So the answer travels
+    -- with the delivery rather than being looked up from it.
+    is_age_restricted boolean  NOT NULL DEFAULT false,
+    min_age           smallint CHECK (min_age BETWEEN 16 AND 25),
+
     search_vector tsvector,
     created_at   timestamptz  NOT NULL DEFAULT now(),
     updated_at   timestamptz  NOT NULL DEFAULT now()
+);
+
+ALTER TABLE products ADD CONSTRAINT ck_products_min_age CHECK (
+    is_age_restricted = (min_age IS NOT NULL)
 );
 
 CREATE INDEX ix_products_category ON products (category_id);
@@ -82,18 +109,107 @@ CREATE TABLE product_variants (
     product_id     uuid          NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     sku            varchar(64)   NOT NULL UNIQUE,
     name           text          NOT NULL,
-    -- The LIST price. The struck-through "was" figure on a sale badge is this
-    -- column; what the shopper actually pays comes from the effective-price
-    -- view below. There is deliberately no compare_at column any more: two
-    -- hand-maintained prices drift apart, and the discount is now derivable
-    -- from the offer that caused it.
+    
+    -- The LIST price, per selling unit — per item for a tin of beans, per pound
+    -- for the deli counter. Which of those it means is `price_by` below. The
+    -- struck-through "was" figure on a sale badge is this column; what the
+    -- shopper actually pays comes from the effective-price view further down.
+    -- There is deliberately no compare_at column: two hand-maintained prices
+    -- drift apart, and the discount is derivable from the offer that caused it.
     price_amount   numeric(19,4) NOT NULL CHECK (price_amount >= 0),
     currency       char(3)       NOT NULL DEFAULT 'USD',
+
+    -- ---- how this thing is bought and priced -----------------------------
+    -- A grocery basket mixes three shapes and they are two independent
+    -- questions, not one:
+    --
+    --   tin of beans   sell_by EACH   price_by EACH     count it, price per tin
+    --   whole chicken  sell_by EACH   price_by WEIGHT   count it, price per lb
+    --   deli turkey    sell_by WEIGHT price_by WEIGHT   ask for 0.5 lb, price per lb
+    --
+    -- The middle row is the awkward one — "catch weight". The shopper takes one
+    -- chicken, but nobody knows what it costs until it is on the scale, so
+    -- checkout can only estimate from `weight_grams` and the real figure lands
+    -- when the picker weighs it. That estimate is exactly why the card is
+    -- authorised for more than the basket says (see V5__order).
+    sell_by  varchar(8) NOT NULL DEFAULT 'EACH'
+        CHECK (sell_by  IN ('EACH', 'WEIGHT')),
+    price_by varchar(8) NOT NULL DEFAULT 'EACH'
+        CHECK (price_by IN ('EACH', 'WEIGHT')),
+    -- The unit `price_amount` is quoted in when priced by weight.
+    price_unit varchar(4)
+        CHECK (price_unit IN ('LB', 'KG', 'OZ', 'G')),
+    -- Two shapes, two different questions, and only one applies to any row.
+    --
+    -- CATCH WEIGHT (counted by the piece, priced by the scale) has a band: a
+    -- whole chicken is "3.5-4.5 lb". Nobody knows which bird until it is on the
+    -- scale, so max_weight is what checkout authorises against.
+    min_weight numeric(12,3) CHECK (min_weight > 0),
+    max_weight numeric(12,3) CHECK (max_weight > 0),
+    --
+    -- SOLD BY WEIGHT (the counter, the loose bins) has no band to state in
+    -- advance — the shopper names the amount. What it needs instead is how far
+    -- over that amount a cut may be billed. Ask for 0.5 lb of ham at 10% and
+    -- the ceiling is 0.55 lb; the slicer may hand over 0.6 lb and often will,
+    -- but the customer is charged for 0.55.
+    --
+    -- Either way the ceiling is a BILLING cap before it is a description. An
+    -- over-weight pick still goes in the bag — the customer simply never pays
+    -- past what they were quoted, which is what keeps a capture inside its
+    -- authorisation without anyone having to guess a buffer.
+    pick_tolerance_pct numeric(5,2)
+        CHECK (pick_tolerance_pct >= 0 AND pick_tolerance_pct <= 100),
+
+    -- The nominal weight of one unit. Doubles as the shipping weight and as the
+    -- estimate a catch-weight line is priced from at checkout.
     weight_grams   integer       CHECK (weight_grams >= 0),
+
+    -- What is in the package, for the shelf-edge unit price ("$0.42/oz"). Sold
+    -- separately from the pricing columns because a tin of beans is priced per
+    -- tin but still has to display a price per ounce.
+    net_content      numeric(12,3) CHECK (net_content > 0),
+    net_content_unit varchar(6)
+        CHECK (net_content_unit IN ('G', 'KG', 'ML', 'L', 'OZ', 'LB', 'FLOZ', 'CT')),
+
     is_default     boolean       NOT NULL DEFAULT false,
     is_active      boolean       NOT NULL DEFAULT true,
     created_at     timestamptz   NOT NULL DEFAULT now(),
-    updated_at     timestamptz   NOT NULL DEFAULT now()
+    updated_at     timestamptz   NOT NULL DEFAULT now(),
+
+    -- Priced per item: no weight machinery at all, and it cannot be ordered by
+    -- weight either — asking for "half a pound of tinned beans" is nonsense.
+    -- Priced per weight: the unit and the tolerance are both required, and a
+    -- catch-weight line additionally needs a nominal weight to estimate from.
+    CONSTRAINT ck_variants_weight_pricing CHECK (
+        CASE
+            -- Priced per item: none of the weight machinery applies, and it
+            -- cannot be ordered by weight either — "half a pound of tinned
+            -- beans" is not a thing anyone can sell you.
+            WHEN price_by = 'EACH' THEN
+                sell_by = 'EACH'
+                AND price_unit IS NULL
+                AND min_weight IS NULL AND max_weight IS NULL
+                AND pick_tolerance_pct IS NULL
+            -- Catch weight: the band is the band one unit comes in, and
+            -- weight_grams is the nominal figure checkout estimates from.
+            WHEN sell_by = 'EACH' THEN
+                price_unit IS NOT NULL
+                AND min_weight IS NOT NULL AND max_weight IS NOT NULL
+                AND max_weight >= min_weight
+                AND weight_grams IS NOT NULL
+                AND pick_tolerance_pct IS NULL
+            -- Sold by weight: a tolerance, and no band.
+            ELSE
+                price_unit IS NOT NULL
+                AND pick_tolerance_pct IS NOT NULL
+                AND min_weight IS NULL AND max_weight IS NULL
+        END
+    ),
+
+    -- A quantity without its unit cannot be displayed and cannot be compared.
+    CONSTRAINT ck_variants_net_content CHECK (
+        (net_content IS NULL) = (net_content_unit IS NULL)
+    )
 );
 
 CREATE INDEX ix_variants_product ON product_variants (product_id);

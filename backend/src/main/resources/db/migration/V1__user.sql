@@ -55,9 +55,16 @@ CREATE TABLE role_permissions (
 );
 
 -- Seeded before `users`, which now carries a NOT NULL role_id.
+--
+-- Staff roles, in the order an order passes through them: a MODERATOR assigns
+-- the work, a PICKER walks the shelves, a DRIVER carries it out. Nothing
+-- advances a PAID order on its own — every step after payment is a person.
 INSERT INTO roles (name, description) VALUES
-    ('ADMIN',    'Full administrative access'),
-    ('CUSTOMER', 'Standard shopper');
+    ('ADMIN',     'Full administrative access'),
+    ('MODERATOR', 'Assigns orders to pickers and drivers; confirms the picked order'),
+    ('PICKER',    'Picks the lines of an assigned order from the store shelves'),
+    ('DRIVER',    'Carries a confirmed order from the store to the customer'),
+    ('CUSTOMER',  'Standard shopper');
 
 -- ---------------------------------------------------------------- users -----
 CREATE TABLE users (
@@ -201,8 +208,11 @@ CREATE TABLE addresses (
     country_code   char(2)     NOT NULL,
     phone          text,
 
-    is_default_shipping boolean NOT NULL DEFAULT false,
-    is_default_billing  boolean NOT NULL DEFAULT false,
+    -- One default per user, and it is where their orders go. There is no
+    -- billing counterpart: a billing address belongs to the card and is held by
+    -- the payment provider, so a copy here would be a second, staler version of
+    -- something this database does not own.
+    is_default boolean NOT NULL DEFAULT false,
 
     created_at     timestamptz NOT NULL DEFAULT now(),
     updated_at     timestamptz NOT NULL DEFAULT now(),
@@ -211,11 +221,9 @@ CREATE TABLE addresses (
 
 CREATE INDEX ix_addresses_user ON addresses (user_id) WHERE deleted_at IS NULL;
 
--- At most one default of each kind per user.
-CREATE UNIQUE INDEX ux_addresses_default_shipping
-    ON addresses (user_id) WHERE is_default_shipping AND deleted_at IS NULL;
-CREATE UNIQUE INDEX ux_addresses_default_billing
-    ON addresses (user_id) WHERE is_default_billing  AND deleted_at IS NULL;
+-- At most one default per user.
+CREATE UNIQUE INDEX ux_addresses_default
+    ON addresses (user_id) WHERE is_default AND deleted_at IS NULL;
 
 CREATE TRIGGER trg_addresses_updated_at
     BEFORE UPDATE ON addresses

@@ -25,8 +25,24 @@ public class AuthCookieFactory extends BaseFactory {
         this.properties = properties;
     }
 
+    /**
+     * The access cookie outlives the access token it carries, deliberately.
+     *
+     * The token's own 15-minute expiry is enforced by its {@code exp} claim, in
+     * {@code AccessTokenFilter} — the cookie's max-age enforces nothing. Giving
+     * the cookie the token's lifetime meant the browser deleted it at the exact
+     * moment it became needed: {@code /auth/refresh} requires BOTH cookies,
+     * because the access token carries the hash the refresh token is checked
+     * against and the session id to rotate. With the cookie gone, refresh saw a
+     * null access token and answered INVALID_REFRESH, so no session could ever
+     * be renewed — every visitor was signed out after fifteen minutes.
+     *
+     * {@code readAccessTokenIgnoringExpiry} exists precisely because refresh is
+     * meant to read an EXPIRED access token. Carrying the refresh lifetime is
+     * what lets it.
+     */
     public ResponseCookie access(String jwt) {
-        return base(ACCESS_COOKIE, jwt, properties.accessTtl()).httpOnly(true).path("/").build();
+        return base(ACCESS_COOKIE, jwt, properties.refreshTtl()).httpOnly(true).path("/").build();
     }
 
     public ResponseCookie refresh(String token) {

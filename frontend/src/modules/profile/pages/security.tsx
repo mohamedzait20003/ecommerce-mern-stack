@@ -1,20 +1,23 @@
 import { type FC } from 'react';
 
-import ChangePassword from '../components/ChangePassword';
-import TwoFactorAuth from '../components/TwoFactorAuth';
-import ActiveSessions from '../components/ActiveSessions';
+import {
+    ActiveSessionsSection,
+    ChangePasswordSection,
+    TwoFactorSection,
+} from '../components/security-sections';
+import { SECURITY_SECTIONS } from '../components/section-index';
+import { SettingsPage } from '../components/settings-page';
 
-const Security: FC = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Security Settings</h1>
-            <div className="space-y-8">
-                <ChangePassword />
-                <TwoFactorAuth />
-                <ActiveSessions />
-            </div>
-        </div>
-    );
-};
+const Security: FC = () => (
+    <SettingsPage
+        title="Security"
+        description="What stands between your account and someone else. Two-factor authentication is the single biggest thing you can turn on here."
+        sections={SECURITY_SECTIONS}
+    >
+        <ChangePasswordSection />
+        <TwoFactorSection />
+        <ActiveSessionsSection />
+    </SettingsPage>
+);
 
 export default Security;

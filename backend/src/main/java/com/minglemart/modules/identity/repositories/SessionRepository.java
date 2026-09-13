@@ -22,6 +22,22 @@ public interface SessionRepository extends BaseRepository<SessionModel> {
     /** Housekeeping/admin lookup by the raw handle. */
     Optional<SessionModel> findByPublicUserId(String publicUserId);
 
+    /**
+     * A session that is still meant to work, with its user already joined.
+     *
+     * <p>Backs {@code @Authorize(session = true)}. The user is fetched in the
+     * same query because the caller always needs the account flags too, and
+     * letting them lazy-load would make one authorisation check two round trips.
+     */
+    @Query("""
+            SELECT s FROM SessionModel s
+            JOIN   FETCH s.user
+            WHERE  s.id = :sessionId
+              AND  s.revokedAt IS NULL
+              AND  s.expiresAt > :now
+            """)
+    Optional<SessionModel> findLive(@Param("sessionId") UUID sessionId, @Param("now") Instant now);
+
     /** Sign-out-everywhere. Bulk update, so callers must clear the persistence context. */
     @Modifying
     @Query("update SessionModel s set s.revokedAt = :now "

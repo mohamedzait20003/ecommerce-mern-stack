@@ -93,7 +93,7 @@ export const routeMiddleware = (policy: RoutePolicyType): MiddlewareFunction =>
  * ```ts
  * const AdminRoutes: RouteObject = {
  *     path: 'admin',
- *     ...guarded(RoutePolicy.protected(['Admin'])),
+ *     ...guarded(RoutePolicy.protected(['ADMIN'])),
  *     element: <Layout />,
  * };
  * ```
@@ -119,6 +119,5 @@ export type RoutePrefetch = (request: Request) => unknown[];
 
 export interface RouteHandleExtras {
     prefetch?: RoutePrefetch;
-    /** HTTP status this route answers with; see `entry-server`. */
     status?: number;
 }

@@ -19,13 +19,21 @@ public class SmtpMailSender {
     private final String from;
     private final String fromName;
 
-    public SmtpMailSender(JavaMailSender mailSender, @Value("${minglemart.mail.from:no-reply@minglemart.local}") String from, @Value("${minglemart.mail.from-name:MingleMart}") String fromName) {
+    public SmtpMailSender(
+        JavaMailSender mailSender,
+
+        @Value("${minglemart.mail.from:no-reply@minglemart.local}")
+        String from,
+
+        @Value("${minglemart.mail.from-name:MingleMart}")
+        String fromName
+    ) {
         this.mailSender = mailSender;
         this.from = from;
         this.fromName = fromName;
     }
 
-    public String send(MailMessage message) {
+    public String send(Message message) {
         try {
             MimeMessage mime = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mime, false, StandardCharsets.UTF_8.name());
@@ -42,8 +50,17 @@ public class SmtpMailSender {
 
             return id != null ? id : "smtp-" + UUID.randomUUID();
 
-        } catch (Exception e) {
-            throw new MailDeliveryException("SMTP delivery to %s failed".formatted(message.to()), e);
+        } catch (Exception failure) {
+            throw new DeliveryException("SMTP delivery to %s failed".formatted(message.to()), failure);
+        }
+    }
+
+    public record Message(String to, String subject, String htmlBody) {
+    }
+
+    public static class DeliveryException extends RuntimeException {
+        public DeliveryException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

@@ -1,158 +1,67 @@
-import { Fragment, type FC } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import type { FC } from "react"
+import { Outlet } from "react-router-dom"
+import {
+    CreditCardIcon,
+    LockIcon,
+    ShieldCheckIcon,
+    TruckIcon,
+    UserIcon,
+} from "lucide-react"
 
-import { MdPerson, MdSecurity, MdLock, MdLocalShipping, MdCreditCard, MdAccountCircle, MdBadge, MdSettings, MdVpnKey, MdShield, MdDevices, MdStorage, MdVerifiedUser, MdNotifications } from 'react-icons/md';
-import { LogOutIcon } from 'lucide-react';
+import { Navbar } from "@/common/components/main/navbar"
+import { navFor } from "@/lib/utils/navLinks"
+import { useCart } from "@/lib/hooks/useCart"
+import { useUser } from "@/lib/hooks/useUser"
 
-import { Navbar, type ButtonsProps } from '@/common/components/main/navbar';
-import { useUser } from '@/lib/hooks/useUser';
+import { ProfileHeader } from "./components/profile-header"
+import { ProfileNav, SECTIONS } from "./components/profile-nav"
+
+const ICONS = {
+    user: UserIcon,
+    shield: ShieldCheckIcon,
+    lock: LockIcon,
+    truck: TruckIcon,
+    card: CreditCardIcon,
+}
 
 const Layout: FC = () => {
-    const { role, logout, isLoggingOut } = useUser();
+    const { user, role, isAuthenticated, logout, isLoggingOut } = useUser()
+    const { totals } = useCart()
 
-    const location = useLocation();
-    const isCustomer = role === 'Customer';
+    const { MainLinks, Buttons, homeTo } = navFor(
+        isAuthenticated ? role : null,
+        user.publicUserId,
+        { logout, isLoggingOut, cartCount: totals.itemCount }
+    )
 
-    const Buttons: ButtonsProps[] = [
-        { label: 'Log out', icon: LogOutIcon, onClick: logout, disabled: isLoggingOut },
-    ];
-
-    const isSubItemActive = (path: string) => location.pathname === path;
-    const isParentActive = (subItems: { path: string }[]) => subItems.some(sub => location.pathname === sub.path);
-
-    const profileInfoSubItems = [
-        { path: '/profile#picture', label: 'Profile Picture', icon: MdAccountCircle },
-        { path: '/profile#personal', label: 'Personal Info', icon: MdPerson },
-        { path: '/profile#account', label: 'Account Info', icon: MdBadge },
-        { path: '/profile#preferences', label: 'Preferences', icon: MdSettings },
-    ];
-
-    const securitySubItems = [
-        { path: '/profile/security#change-password', label: 'Change Password', icon: MdVpnKey },
-        { path: '/profile/security#two-factor', label: 'Two-Factor Auth', icon: MdShield },
-        { path: '/profile/security#active-sessions', label: 'Active Sessions', icon: MdDevices },
-    ];
-
-    const privacySubItems = [
-        { path: '/profile/privacy#data-management', label: 'Data Management', icon: MdStorage },
-        { path: '/profile/privacy#account-rights', label: 'Account Privacy', icon: MdVerifiedUser },
-        { path: '/profile/privacy#notification-settings', label: 'Notifications', icon: MdNotifications },
-    ];
-
-    const menuItems = [
-        {
-            key: 'profile-information',
-            path: '/profile',
-            label: 'Profile Information',
-            icon: MdPerson,
-            subItems: profileInfoSubItems
-        },
-        {
-            key: 'security',
-            path: '/profile/security',
-            label: 'Security Settings',
-            icon: MdSecurity,
-            subItems: securitySubItems
-        },
-        {
-            key: 'privacy',
-            path: '/profile/privacy',
-            label: 'Privacy Settings',
-            icon: MdLock,
-            subItems: privacySubItems
-        },
-        ...(isCustomer ? [
-            { key: 'shipping', path: '/profile/shipping', label: 'Shipping Settings', icon: MdLocalShipping },
-            { key: 'billing', path: '/profile/billing', label: 'Billing Settings', icon: MdCreditCard },
-        ] : [])
-    ];
+    const sections = SECTIONS(ICONS).filter(
+        (section) => !section.customerOnly || role === "CUSTOMER"
+    )
 
     return (
-        <Fragment>
-            {/* No homeTo: profile sits outside the per-user prefixes, so the logo
-                points at '/', whose guest policy forwards a signed-in visitor to
-                their own home. One hop, and no id needed here. */}
-            <Navbar Buttons={Buttons} isAuthenticated />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <aside className="w-full lg:w-80 shrink-0">
-                        <nav className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-                            <div className="p-6 bg-linear-to-r from-blue-600 to-blue-700 text-white">
-                                <h2 className="text-xl font-bold">Account Settings</h2>
-                            </div>
-                            <ul className="py-3">
-                                {menuItems.map((item) => {
-                                    const Icon = item.icon;
-                                    const hasSubItems = 'subItems' in item && item.subItems;
-                                    const isActive = hasSubItems
-                                        ? isParentActive(item.subItems)
-                                        : location.pathname === item.path;
+        <div className="flex min-h-dvh flex-col">
+            <Navbar
+                MainLinks={MainLinks}
+                Buttons={Buttons}
+                isAuthenticated={isAuthenticated}
+                homeTo={homeTo}
+            />
 
-                                    return (
-                                        <li key={item.key}>
-                                            {hasSubItems ? (
-                                                <>
-                                                    <NavLink
-                                                        to={item.path}
-                                                        className={`w-full flex items-center gap-4 px-6 py-4 transition-colors duration-150 ${
-                                                            isActive
-                                                                ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-semibold'
-                                                                : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                                                        }`}
-                                                    >
-                                                        <Icon fontSize="medium" />
-                                                        <span className="text-base">{item.label}</span>
-                                                    </NavLink>
-                                                    <ul className="bg-gray-50">
-                                                        {item.subItems.map((subItem) => {
-                                                            const SubIcon = subItem.icon;
-                                                            const subActive = isSubItemActive(subItem.path);
-                                                            return (
-                                                                <li key={subItem.path}>
-                                                                    <NavLink
-                                                                        to={subItem.path}
-                                                                        className={`flex items-center gap-3 pl-16 pr-6 py-3 transition-colors duration-150 ${
-                                                                            subActive
-                                                                                ? 'bg-blue-100 text-blue-700 font-medium'
-                                                                                : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600'
-                                                                        }`}
-                                                                    >
-                                                                        <SubIcon fontSize="small" />
-                                                                        <span className="text-sm">{subItem.label}</span>
-                                                                    </NavLink>
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
-                                            </>
-                                        ) : (
-                                            <NavLink
-                                                to={item.path}
-                                                className={({ isActive }) =>
-                                                    `flex items-center gap-4 px-6 py-4 transition-colors duration-150 ${
-                                                        isActive
-                                                            ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-semibold'
-                                                            : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                                                    }`
-                                                }
-                                            >
-                                                <Icon fontSize="medium" />
-                                                <span className="text-base">{item.label}</span>
-                                            </NavLink>
-                                        )}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </nav>
-                </aside>
-                <main id="main-content" className="flex-1 bg-white rounded-lg shadow-md border border-gray-200 p-8">
-                    <Outlet />
-                </main>
+            <ProfileHeader />
+
+            <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+                <div className="grid gap-8 lg:grid-cols-[15rem_1fr] lg:gap-12">
+                    <aside className="lg:sticky lg:top-24 lg:self-start">
+                        <ProfileNav sections={sections} />
+                    </aside>
+
+                    <main id="main-content">
+                        <Outlet />
+                    </main>
                 </div>
             </div>
-        </Fragment>
-    );
-};
+        </div>
+    )
+}
 
-export default Layout;
+export default Layout

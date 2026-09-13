@@ -3,6 +3,7 @@ import { Outlet, useParams } from "react-router-dom"
 
 import { Navbar } from "@/common/components/main/navbar"
 import { navFor } from "@/lib/utils/navLinks"
+import { useCart } from "@/lib/hooks/useCart"
 import { useUser } from "@/lib/hooks/useUser"
 
 /**
@@ -20,11 +21,12 @@ import { useUser } from "@/lib/hooks/useUser"
 const AudienceLayout: FC = () => {
     const { publicUserId } = useParams()
     const { user, role, isAuthenticated, logout, isLoggingOut } = useUser()
+    const { totals } = useCart()
 
     const { MainLinks, Buttons, homeTo } = navFor(
         isAuthenticated ? role : null,
         publicUserId ?? user.publicUserId,
-        { logout, isLoggingOut },
+        { logout, isLoggingOut, cartCount: totals.itemCount },
     )
 
     return (

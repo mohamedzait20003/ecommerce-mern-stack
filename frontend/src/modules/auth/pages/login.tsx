@@ -14,9 +14,9 @@ import { AuthCard } from '../components/auth-card';
 import { AuthLink, AuthSwitch } from '../components/auth-links';
 import { AuthShell } from '../components/auth-shell';
 import { GooglePanel } from '../components/google-panel';
-import { PasswordField } from '../components/password-field';
+import { PasswordField } from '@/common/components/form/password-field';
 import { SubmitButton } from '../components/submit-button';
-import { TextField } from '../components/text-field';
+import { TextField } from '@/common/components/form/text-field';
 
 interface LoginFormData {
     email: string;

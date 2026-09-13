@@ -38,7 +38,8 @@ CREATE TABLE cart_items (
     cart_id      uuid          NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
     variant_id   uuid          NOT NULL
         REFERENCES product_variants(id) ON DELETE RESTRICT,          -- crosses into: catalog
-    quantity     integer       NOT NULL CHECK (quantity > 0),
+    -- In the variant's selling unit: 2 tins, or 0.500 of a pound of turkey.
+    quantity     numeric(12,3) NOT NULL CHECK (quantity > 0),
     -- price as quoted when the line was added, not the live catalogue price
     unit_price_amount numeric(19,4) NOT NULL CHECK (unit_price_amount >= 0),
     currency     char(3)       NOT NULL DEFAULT 'USD',

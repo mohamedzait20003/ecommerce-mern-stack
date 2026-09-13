@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import { ArrowUpIcon, InfoIcon } from "lucide-react"
 
 import {
@@ -8,6 +8,7 @@ import {
     AccordionTrigger,
 } from "@/common/components/ui/accordion"
 import { Reveal } from "@/common/components/animation/reveal"
+import { useScrollSpy } from "@/lib/hooks/useScrollSpy"
 import { cn } from "@/lib/utils/utils"
 
 export type LegalBlock =
@@ -21,47 +22,6 @@ export interface LegalSection {
     id: string
     title: string
     blocks: LegalBlock[]
-}
-
-/**
- * Highlights whichever section is currently under the top of the viewport.
- *
- * The bottom margin discounts the lower four-fifths of the screen, so the
- * active entry tracks what is being read rather than whatever happens to be
- * visible — otherwise every section on a tall screen counts at once.
- */
-function useActiveSection(sections: LegalSection[]) {
-    const [active, setActive] = useState(sections[0]?.id ?? "")
-
-    useEffect(() => {
-        if (typeof IntersectionObserver === "undefined") return
-
-        const nodes = sections
-            .map(({ id }) => document.getElementById(id))
-            .filter((node): node is HTMLElement => node !== null)
-
-        if (!nodes.length) return
-
-        const seen = new Set<string>()
-        const observer = new IntersectionObserver(
-            (entries) => {
-                for (const entry of entries) {
-                    if (entry.isIntersecting) seen.add(entry.target.id)
-                    else seen.delete(entry.target.id)
-                }
-                // Several sections can qualify at once; the first in document
-                // order is the one being read.
-                const current = sections.find(({ id }) => seen.has(id))
-                if (current) setActive(current.id)
-            },
-            { rootMargin: "-96px 0px -80% 0px" }
-        )
-
-        nodes.forEach((node) => observer.observe(node))
-        return () => observer.disconnect()
-    }, [sections])
-
-    return active
 }
 
 function Blocks({ blocks }: Readonly<{ blocks: LegalBlock[] }>) {
@@ -156,7 +116,10 @@ function TocLink({
  * people actually need when they are asking support about clause 7.
  */
 export function LegalDocument({ sections }: Readonly<{ sections: LegalSection[] }>) {
-    const active = useActiveSection(sections)
+    // Memoised because `useScrollSpy` re-observes whenever the array identity
+    // changes, and `sections` is a stable prop.
+    const ids = useMemo(() => sections.map((section) => section.id), [sections])
+    const active = useScrollSpy(ids)
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">

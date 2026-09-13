@@ -1,15 +1,21 @@
 import { type FC } from 'react';
 
-const Shipping: FC = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Shipping Settings</h1>
-            <div className="space-y-4">
-                <p className="text-gray-600">Manage your shipping addresses and delivery preferences.</p>
-                {/* Add shipping addresses form here */}
-            </div>
-        </div>
-    );
-};
+import {
+    AddressesSection,
+    DeliveryPreferencesSection,
+} from '../components/commerce-sections';
+import { SHIPPING_SECTIONS } from '../components/section-index';
+import { SettingsPage } from '../components/settings-page';
+
+const Shipping: FC = () => (
+    <SettingsPage
+        title="Addresses"
+        description="Where your orders go. You can still pick a different address at checkout without changing anything here."
+        sections={SHIPPING_SECTIONS}
+    >
+        <AddressesSection />
+        <DeliveryPreferencesSection />
+    </SettingsPage>
+);
 
 export default Shipping;

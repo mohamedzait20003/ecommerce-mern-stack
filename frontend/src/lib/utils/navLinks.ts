@@ -17,29 +17,17 @@ import {
 import type { ButtonsProps, MainLinkProps } from "@/common/components/main/navbar"
 
 import { navUrls, withUser } from "./navUrls"
+import { ROLE, type Role } from "@/lib/models/userModels"
 
-/**
- * The navigation each audience sees, in one place.
- *
- * Every shell reads its bar from here rather than declaring one inline, so a
- * page that is shared between audiences - the company pages, the error pages -
- * can show the bar belonging to whoever is looking instead of inventing a bar
- * of its own. Adding a link for customers is one edit, and it reaches every
- * page a customer can be standing on.
- *
- * URLs come from `navUrls`; only the labels and icons live here.
- */
-
-/** What the shell can offer that is not a link: signing out. */
 export interface SessionActions {
     logout: () => void
     isLoggingOut: boolean
+    cartCount?: number
 }
 
 export interface AudienceNav {
     MainLinks: MainLinkProps[]
     Buttons: ButtonsProps[]
-    /** Where the brand lockup points for this audience. */
     homeTo: string
 }
 
@@ -58,33 +46,42 @@ export const landingNav = (): AudienceNav => ({
     ],
 })
 
-/** A signed-in customer, under their own prefix. */
 export const customerNav = (
     publicUserId: string | null | undefined,
-    { logout, isLoggingOut }: SessionActions,
+    { logout, isLoggingOut, cartCount }: SessionActions,
 ): AudienceNav => {
     const base = withUser(navUrls.customer.base, publicUserId)
 
     return {
         homeTo: base,
         MainLinks: [
-            { to: base, label: "Shop", icon: StoreIcon, end: true },
+            { to: base, label: "Dashboard", icon: LayoutDashboardIcon, end: true },
+            { to: withUser(navUrls.customer.shop, publicUserId), label: "Shop", icon: StoreIcon },
             { to: withUser(navUrls.customer.deals, publicUserId), label: "Deals", icon: TagIcon },
-            { to: withUser(navUrls.customer.orders, publicUserId), label: "Orders", icon: PackageIcon },
-            // Not prefixed: the company pages are mounted once, outside the
-            // audience modules.
-            { to: navUrls.common.about, label: "About", icon: InfoIcon },
         ],
         Buttons: [
-            // Pass `badge` here once cart count lives in the store.
             {
                 to: withUser(navUrls.customer.cart, publicUserId),
                 label: "Cart",
                 icon: ShoppingCartIcon,
                 variant: "primary",
+                badge: cartCount,
+                iconOnly: true,
             },
-            { to: navUrls.profile.base, label: "Profile", icon: UserIcon },
-            { label: "Log out", icon: LogOutIcon, onClick: logout, disabled: isLoggingOut },
+            {
+                to: withUser(navUrls.customer.orders, publicUserId),
+                label: "Orders",
+                icon: PackageIcon,
+                iconOnly: true,
+            },
+            { to: navUrls.profile.base, label: "Profile", icon: UserIcon, iconOnly: true },
+            {
+                label: "Log out",
+                icon: LogOutIcon,
+                onClick: logout,
+                disabled: isLoggingOut,
+                iconOnly: true,
+            },
         ],
     }
 }
@@ -117,12 +114,12 @@ export const adminNav = (
  * Exported separately from `navFor` because the error pages need somewhere to
  * send people without needing a whole bar to do it.
  */
-export function homeFor(role: string | null, publicUserId: string | null | undefined): string {
-    if (role === "Admin") {
+export function homeFor(role: Role, publicUserId: string | null | undefined): string {
+    if (role === ROLE.ADMIN) {
         return withUser(navUrls.admin.base, publicUserId)
     }
 
-    if (role === "Customer") {
+    if (role === ROLE.CUSTOMER) {
         return withUser(navUrls.customer.base, publicUserId)
     }
 
@@ -137,15 +134,15 @@ export function homeFor(role: string | null, publicUserId: string | null | undef
  * whose links are reachable by everyone.
  */
 export function navFor(
-    role: string | null,
+    role: Role,
     publicUserId: string | null | undefined,
     actions: SessionActions,
 ): AudienceNav {
-    if (role === "Admin") {
+    if (role === ROLE.ADMIN) {
         return adminNav(publicUserId, actions)
     }
 
-    if (role === "Customer") {
+    if (role === ROLE.CUSTOMER) {
         return customerNav(publicUserId, actions)
     }
 

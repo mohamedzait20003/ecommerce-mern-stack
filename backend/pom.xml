@@ -179,6 +179,29 @@
 			<artifactId>testcontainers-postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Domain events leave the transactional outbox over AMQP. The outbox
+		     (spring-modulith-starter-jdbc, above) is what makes an event
+		     impossible to publish unless the transaction that caused it
+		     committed; this is only the wire it leaves on. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.modulith</groupId>
+			<artifactId>spring-modulith-events-amqp</artifactId>
+		</dependency>
+
+		<!-- The payment provider's own client. Everything that touches it sits
+		     behind PaymentGateway, so the rest of the module never imports a
+		     Stripe type and the provider stays swappable. -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>29.0.0</version>
+		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

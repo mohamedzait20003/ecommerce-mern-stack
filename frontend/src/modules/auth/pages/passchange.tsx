@@ -12,7 +12,7 @@ import { AuthAlert } from '../components/auth-alert';
 import { AuthCard } from '../components/auth-card';
 import { AuthLink, AuthSwitch } from '../components/auth-links';
 import { AuthShell } from '../components/auth-shell';
-import { PasswordField } from '../components/password-field';
+import { PasswordField } from '@/common/components/form/password-field';
 import { SubmitButton } from '../components/submit-button';
 
 interface PasswordChangeFormData {

@@ -1,20 +1,23 @@
 import { type FC } from 'react';
 
-import DataManagement from '../components/DataManagement';
-import AccountRights from '../components/AccountRights';
-import NotificationSettings from '../components/NotificationSettings';
+import {
+    AccountRightsSection,
+    DataManagementSection,
+    NotificationSettingsSection,
+} from '../components/privacy-sections';
+import { PRIVACY_SECTIONS } from '../components/section-index';
+import { SettingsPage } from '../components/settings-page';
 
-const PPrivacy: FC = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Privacy Settings</h1>
-            <div className="space-y-8">
-                <DataManagement />
-                <AccountRights />
-                <NotificationSettings />
-            </div>
-        </div>
-    );
-};
+const PPrivacy: FC = () => (
+    <SettingsPage
+        title="Privacy"
+        description="What we record, what we do with it, and how to make us stop. The full policy is linked from every page footer."
+        sections={PRIVACY_SECTIONS}
+    >
+        <DataManagementSection />
+        <AccountRightsSection />
+        <NotificationSettingsSection />
+    </SettingsPage>
+);
 
 export default PPrivacy;
